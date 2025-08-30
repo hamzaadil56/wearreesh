@@ -82,37 +82,121 @@ Based on Vercel Commerce architecture patterns:
 
 #### **Navbar (Server Component)**
 
+The main navbar is a server component that imports client components only where interactivity is needed:
+
 ```typescript
-// components/layout/navbar/index.tsx
-export default async function Navbar() {
-	const menu = await getMenu("next-js-frontend-header-menu");
+// components/layout/navbar.tsx
+import Link from "next/link";
+import { User, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ModeToggle } from "@/components/mode-toggle";
+import { SearchInput } from "./search-input";
+import { MobileMenu } from "./mobile-menu";
+
+export function Navbar() {
+	const cartItemCount = 0; // Dynamic from server state
 
 	return (
-		<nav className="relative flex items-center justify-between p-4 lg:px-6">
-			<div className="flex w-full items-center">
-				<div className="flex w-full md:w-1/3">
-					<Link
-						href="/"
-						className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
-					>
-						<LogoSquare />
-					</Link>
-					{menu.length ? (
-						<ul className="hidden gap-6 text-sm md:flex md:items-center">
-							{menu.map((item: Menu) => (
-								<NavItem key={item.title} item={item} />
-							))}
-						</ul>
-					) : null}
-				</div>
-				<div className="hidden justify-center md:flex md:w-1/3">
-					<Search />
-				</div>
-				<div className="flex justify-end md:w-1/3">
-					<CartModal />
+		<nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+			<div className="container mx-auto px-4">
+				<div className="flex h-16 items-center justify-between">
+					{/* Static navigation links - Server Component */}
+					<div className="hidden md:flex items-center space-x-8">
+						{navigationLinks.map((link) => (
+							<Link key={link.name} href={link.href}>
+								{link.name}
+							</Link>
+						))}
+					</div>
+
+					{/* Logo - Server Component */}
+					<div className="flex items-center">
+						<Link href="/" className="flex items-center space-x-2">
+							<div className="h-8 w-8 rounded bg-primary">
+								<span className="text-primary-foreground font-bold">
+									W
+								</span>
+							</div>
+							<span className="font-bold text-xl">Wearreesh</span>
+						</Link>
+					</div>
+
+					{/* Desktop actions */}
+					<div className="hidden md:flex items-center space-x-4">
+						{/* Interactive search - Client Component */}
+						<SearchInput placeholder="Search..." className="w-64" />
+
+						{/* Static links - Server Components */}
+						<Button variant="ghost" size="icon" asChild>
+							<Link href="/account">
+								<User className="h-5 w-5" />
+							</Link>
+						</Button>
+
+						<Button variant="ghost" size="icon" asChild>
+							<Link href="/cart">
+								<ShoppingCart className="h-5 w-5" />
+								{cartItemCount > 0 && (
+									<Badge variant="destructive">
+										{cartItemCount}
+									</Badge>
+								)}
+							</Link>
+						</Button>
+
+						{/* Interactive theme toggle - Client Component */}
+						<ModeToggle />
+					</div>
+
+					{/* Mobile menu - Client Component */}
+					<div className="md:hidden">
+						<MobileMenu />
+					</div>
 				</div>
 			</div>
 		</nav>
+	);
+}
+```
+
+#### **Search Input (Client Component)**
+
+Interactive search component with state management:
+
+```typescript
+"use client";
+
+// components/layout/search-input.tsx
+import { useState } from "react";
+import { Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+export function SearchInput({ placeholder, className, onSearch }) {
+	const [query, setQuery] = useState("");
+
+	const handleSearch = (searchQuery: string) => {
+		setQuery(searchQuery);
+		onSearch?.(searchQuery);
+	};
+
+	return (
+		<div className={cn("relative", className)}>
+			<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+			<Input
+				type="search"
+				placeholder={placeholder}
+				className="pl-10"
+				value={query}
+				onChange={(e) => handleSearch(e.target.value)}
+			/>
+			{query && (
+				<Button onClick={() => handleSearch("")}>
+					<X className="h-3 w-3" />
+				</Button>
+			)}
+		</div>
 	);
 }
 ```
@@ -122,28 +206,27 @@ export default async function Navbar() {
 ```typescript
 "use client";
 
-// components/layout/mobile-menu/index.tsx
-export default function MobileMenu({ menu }: { menu: Menu[] }) {
-	const [isOpen, setIsOpen] = useState(false);
+// components/layout/mobile-menu.tsx
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
+export function MobileMenu() {
 	return (
-		<>
-			<button onClick={() => setIsOpen(!isOpen)}>
-				<Bars3Icon className="h-6" />
-			</button>
-
-			{isOpen && (
-				<div className="fixed inset-0 z-50 bg-black bg-opacity-80">
-					<div className="relative h-full w-full bg-white p-6">
-						<ul className="flex flex-col">
-							{menu.map((item) => (
-								<MobileMenuItem key={item.title} item={item} />
-							))}
-						</ul>
-					</div>
+		<Sheet>
+			<SheetTrigger asChild>
+				<Button variant="ghost" size="icon">
+					<Menu className="h-5 w-5" />
+				</Button>
+			</SheetTrigger>
+			<SheetContent side="right" className="w-80">
+				{/* Mobile navigation content */}
+				<div className="flex flex-col space-y-6 mt-6">
+					<SearchInput placeholder="Search..." />
+					{/* Navigation links, user account, theme toggle */}
 				</div>
-			)}
-		</>
+			</SheetContent>
+		</Sheet>
 	);
 }
 ```
