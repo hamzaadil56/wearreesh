@@ -203,30 +203,121 @@ export function SearchInput({ placeholder, className, onSearch }) {
 
 #### **Mobile Menu (Client Component)**
 
+Full-screen mobile menu that slides up from the bottom with enhanced UX:
+
 ```typescript
 "use client";
 
 // components/layout/mobile-menu.tsx
-import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, X, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 
 export function MobileMenu() {
+	const [isOpen, setIsOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	// Prevent body scroll when menu is open
+	useEffect(() => {
+		if (isOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "unset";
+		}
+		return () => {
+			document.body.style.overflow = "unset";
+		};
+	}, [isOpen]);
+
+	// Close menu on escape key
+	useEffect(() => {
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setIsOpen(false);
+		};
+		if (isOpen) {
+			document.addEventListener("keydown", handleEscape);
+		}
+		return () => {
+			document.removeEventListener("keydown", handleEscape);
+		};
+	}, [isOpen]);
+
 	return (
-		<Sheet>
-			<SheetTrigger asChild>
-				<Button variant="ghost" size="icon">
-					<Menu className="h-5 w-5" />
-				</Button>
-			</SheetTrigger>
-			<SheetContent side="right" className="w-80">
-				{/* Mobile navigation content */}
-				<div className="flex flex-col space-y-6 mt-6">
-					<SearchInput placeholder="Search..." />
-					{/* Navigation links, user account, theme toggle */}
+		<>
+			{/* Menu Trigger */}
+			<Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
+				<Menu className="h-5 w-5" />
+			</Button>
+
+			{/* Full Screen Overlay */}
+			{isOpen && (
+				<div className="fixed inset-0 z-50 md:hidden">
+					{/* Background Overlay */}
+					<div
+						className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+						onClick={() => setIsOpen(false)}
+					/>
+
+					{/* Menu Panel - Slides up from bottom */}
+					<div className="fixed bottom-0 left-0 right-0 h-full bg-background animate-in slide-in-from-bottom-full">
+						{/* Menu Header with Logo and Close Button */}
+						<div className="flex items-center justify-between p-4 border-b">
+							<div className="flex items-center space-x-2">
+								<div className="h-8 w-8 rounded bg-primary flex items-center justify-center">
+									<span className="text-primary-foreground font-bold">
+										W
+									</span>
+								</div>
+								<span className="font-bold text-xl">
+									Wearreesh
+								</span>
+							</div>
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={() => setIsOpen(false)}
+							>
+								<X className="h-6 w-6" />
+							</Button>
+						</div>
+
+						{/* Scrollable Menu Content */}
+						<div className="flex flex-col h-full overflow-y-auto">
+							<div className="flex-1 px-4 py-6 space-y-8">
+								{/* Organized sections with headers */}
+								<div className="space-y-2">
+									<h3 className="text-sm font-medium text-muted-foreground uppercase">
+										Search
+									</h3>
+									<div className="relative">
+										<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+										<Input
+											type="search"
+											placeholder="Search products..."
+											className="pl-10 h-12 text-lg"
+											value={searchQuery}
+											onChange={(e) =>
+												setSearchQuery(e.target.value)
+											}
+										/>
+									</div>
+								</div>
+
+								{/* Navigation, Account, Theme sections... */}
+							</div>
+
+							{/* Footer */}
+							<div className="border-t p-4 bg-muted/20">
+								<p className="text-center text-sm text-muted-foreground">
+									&copy; 2024 Wearreesh. All rights reserved.
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
-			</SheetContent>
-		</Sheet>
+			)}
+		</>
 	);
 }
 ```
