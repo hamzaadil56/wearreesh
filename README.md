@@ -148,6 +148,119 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
 }
 ```
 
+## 🌙 Dark Mode Implementation
+
+The application includes comprehensive dark mode support following [shadcn/ui patterns](https://ui.shadcn.com/docs/dark-mode/next), providing users with light, dark, and system preference options.
+
+### **Theme Provider Setup**
+
+The theme system is built using `next-themes` and integrated at the root layout level:
+
+```typescript
+// src/components/theme-provider.tsx
+"use client";
+
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
+export function ThemeProvider({
+	children,
+	...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
+	return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}
+```
+
+### **Root Layout Integration**
+
+```typescript
+// src/app/layout.tsx
+import { ThemeProvider } from "@/components/theme-provider";
+
+export default function RootLayout({ children }) {
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					{children}
+				</ThemeProvider>
+			</body>
+		</html>
+	);
+}
+```
+
+### **Mode Toggle Component**
+
+```typescript
+// src/components/mode-toggle.tsx
+"use client";
+
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+export function ModeToggle() {
+	const { setTheme } = useTheme();
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant="outline" size="icon">
+					<Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+					<Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+					<span className="sr-only">Toggle theme</span>
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end">
+				<DropdownMenuItem onClick={() => setTheme("light")}>
+					Light
+				</DropdownMenuItem>
+				<DropdownMenuItem onClick={() => setTheme("dark")}>
+					Dark
+				</DropdownMenuItem>
+				<DropdownMenuItem onClick={() => setTheme("system")}>
+					System
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
+```
+
+### **Dark Mode CSS Classes**
+
+Tailwind CSS automatically handles dark mode through the `dark:` prefix:
+
+```typescript
+// Example usage in components
+<div className="bg-white dark:bg-gray-900 text-black dark:text-white">
+	<p className="text-gray-600 dark:text-gray-300">Content</p>
+	<Image className="dark:invert" src="/logo.svg" alt="Logo" />
+</div>
+```
+
+### **Theme Configuration**
+
+The theme system supports:
+
+-   **Light Mode**: Default light theme
+-   **Dark Mode**: Dark theme with proper contrast ratios
+-   **System Mode**: Automatically follows OS preference
+-   **Smooth Transitions**: Disabled to prevent flash during SSR
+-   **Hydration Safe**: Uses `suppressHydrationWarning` to prevent mismatches
+
 ## 🛠️ Development Guidelines
 
 ### **Component Creation Rules**
@@ -223,7 +336,9 @@ import Image from "next/image";
 ### **Styling & UI**
 
 -   **Tailwind CSS**: Utility-first CSS framework
--   **Headless UI**: Unstyled, accessible UI components
+-   **shadcn/ui**: High-quality, accessible UI components built on Radix UI
+-   **next-themes**: Theme switching with system preference support
+-   **Lucide React**: Beautiful, customizable icons
 -   **clsx**: Conditional className utility
 
 ### **Data Management**
@@ -286,6 +401,8 @@ When building features, ensure you follow these patterns:
 -   [ ] Handle error states gracefully
 -   [ ] Optimize images with Next.js Image component
 -   [ ] Ensure accessibility (ARIA labels, keyboard navigation)
+-   [ ] Add dark mode support with `dark:` classes
+-   [ ] Test component in both light and dark themes
 
 ### **✅ Data Management**
 
