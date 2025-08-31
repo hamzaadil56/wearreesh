@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-import { revalidateTag } from "next/cache";
 import {
 	HIDDEN_PRODUCT_TAG,
 	SHOPIFY_GRAPHQL_API_ENDPOINT,

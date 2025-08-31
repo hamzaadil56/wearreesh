@@ -1,26 +1,28 @@
 "use client";
 
 import * as React from "react";
-import { Menu, Minus, Plus, X } from "lucide-react";
+import { Menu, X, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
 	Drawer,
 	DrawerClose,
 	DrawerContent,
-	DrawerDescription,
-	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
+import { CollectionsList, CollectionsListSkeleton } from "./collections-list";
+
+const navigationLinks = [
+	{ name: "Shop", href: "/shop" },
+	{ name: "About Us", href: "/about" },
+];
 
 export function MobileMenu() {
-	const [goal, setGoal] = React.useState(350);
-
-	function onClick(adjustment: number) {
-		setGoal(Math.max(200, Math.min(400, goal + adjustment)));
-	}
+	const [showCollections, setShowCollections] = React.useState(false);
 
 	return (
 		<Drawer shouldScaleBackground={false}>
@@ -30,87 +32,74 @@ export function MobileMenu() {
 					<span className="sr-only">Open menu</span>
 				</Button>
 			</DrawerTrigger>
-			<DrawerContent
-				className="fixed inset-0 z-50 flex flex-col bg-background p-0 max-w-none w-screen h-screen rounded-none border-0 m-0 transition-transform duration-200 ease-out"
-				style={{
-					position: "fixed",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					width: "100vw",
-					height: "100vh",
-					maxWidth: "none",
-					maxHeight: "none",
-					borderRadius: 0,
-					margin: 0,
-					padding: 0,
-					transitionDuration: "200ms",
-					transitionTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
-				}}
-			>
-				{/* Close Button at Top */}
-				<div className="absolute top-4 right-4 z-10">
+			<DrawerContent className="fixed inset-0 z-50 flex flex-col bg-background p-0 max-w-none w-screen h-screen rounded-none border-0 m-0">
+				{/* Header with Close Button */}
+				<DrawerHeader className="flex items-center justify-between p-4 border-b">
+					<DrawerTitle>Menu</DrawerTitle>
 					<DrawerClose asChild>
-						<Button
-							variant="ghost"
-							size="icon"
-							className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border"
-						>
+						<Button variant="ghost" size="icon">
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close menu</span>
 						</Button>
 					</DrawerClose>
-				</div>
+				</DrawerHeader>
 
-				{/* Full Screen Content */}
-				<div className="flex-1 flex flex-col justify-center items-center w-full h-full min-h-screen">
-					<div className="w-full max-w-sm mx-auto px-4">
-						<DrawerHeader className="text-center">
-							<DrawerTitle>Move Goal</DrawerTitle>
-							<DrawerDescription>
-								Set your daily activity goal.
-							</DrawerDescription>
-						</DrawerHeader>
-						<div className="p-4 pb-0">
-							<div className="flex items-center justify-center space-x-2">
-								<Button
-									variant="outline"
-									size="icon"
-									className="h-8 w-8 shrink-0 rounded-full"
-									onClick={() => onClick(-10)}
-									disabled={goal <= 200}
-								>
-									<Minus />
-									<span className="sr-only">Decrease</span>
-								</Button>
-								<div className="flex-1 text-center">
-									<div className="text-7xl font-bold tracking-tighter">
-										{goal}
-									</div>
-									<div className="text-muted-foreground text-[0.70rem] uppercase">
-										Calories/day
-									</div>
-								</div>
-								<Button
-									variant="outline"
-									size="icon"
-									className="h-8 w-8 shrink-0 rounded-full"
-									onClick={() => onClick(10)}
-									disabled={goal >= 400}
-								>
-									<Plus />
-									<span className="sr-only">Increase</span>
-								</Button>
-							</div>
+				{/* Navigation Content */}
+				<div className="flex-1 overflow-y-auto p-4">
+					{!showCollections ? (
+						// Main Menu
+						<div className="space-y-2">
+							{navigationLinks.map((link) => {
+								if (link.name === "Shop") {
+									return (
+										<button
+											key={link.name}
+											onClick={() =>
+												setShowCollections(true)
+											}
+											className="flex w-full items-center justify-between rounded-lg p-4 text-left transition-colors hover:bg-muted"
+										>
+											<span className="text-lg font-medium">
+												{link.name}
+											</span>
+											<ChevronRight className="h-5 w-5" />
+										</button>
+									);
+								}
+								return (
+									<DrawerClose key={link.name} asChild>
+										<Link
+											href={link.href}
+											className="flex w-full items-center rounded-lg p-4 text-lg font-medium transition-colors hover:bg-muted"
+										>
+											{link.name}
+										</Link>
+									</DrawerClose>
+								);
+							})}
 						</div>
-						<DrawerFooter className="pt-6">
-							<Button>Submit</Button>
-							<DrawerClose asChild>
-								<Button variant="outline">Cancel</Button>
-							</DrawerClose>
-						</DrawerFooter>
-					</div>
+					) : (
+						// Collections Menu
+						<div>
+							<div className="mb-4">
+								<button
+									onClick={() => setShowCollections(false)}
+									className="flex items-center text-sm text-muted-foreground hover:text-foreground"
+								>
+									← Back to Menu
+								</button>
+								<h2 className="mt-2 text-lg font-semibold">
+									Shop Collections
+								</h2>
+								<p className="text-sm text-muted-foreground">
+									Browse our curated collections
+								</p>
+							</div>
+							<Suspense fallback={<CollectionsListSkeleton />}>
+								<CollectionsList />
+							</Suspense>
+						</div>
+					)}
 				</div>
 			</DrawerContent>
 		</Drawer>

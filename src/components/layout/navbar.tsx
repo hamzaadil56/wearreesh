@@ -5,6 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SearchInput } from "./search-input";
 import { MobileMenu } from "./mobile-menu";
+import { ShopDrawer } from "./shop-drawer";
+import { CollectionsList } from "./collections-list";
+import { CollectionsListSkeleton } from "./collections-list";
+import { Suspense } from "react";
 
 const navigationLinks = [
 	{ name: "Shop", href: "/shop" },
@@ -21,15 +25,36 @@ export function Navbar() {
 				<div className="relative flex h-16 items-center">
 					{/* Left Section - Navigation Links (Desktop) */}
 					<div className="hidden md:flex items-center space-x-8">
-						{navigationLinks.map((link) => (
-							<Link
-								key={link.name}
-								href={link.href}
-								className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
-							>
-								{link.name}
-							</Link>
-						))}
+						{navigationLinks.map((link) => {
+							if (link.name === "Shop") {
+								return (
+									<ShopDrawer
+										key={link.name}
+										buttonText={link.name}
+										className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground hover:underline underline-offset-4"
+									>
+										<div className="mt-6 h-full overflow-y-auto">
+											<Suspense
+												fallback={
+													<CollectionsListSkeleton />
+												}
+											>
+												<CollectionsList />
+											</Suspense>
+										</div>
+									</ShopDrawer>
+								);
+							}
+							return (
+								<Link
+									key={link.name}
+									href={link.href}
+									className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground hover:underline underline-offset-4"
+								>
+									{link.name}
+								</Link>
+							);
+						})}
 					</div>
 
 					{/* Center Section - Logo (Absolutely Centered) */}
