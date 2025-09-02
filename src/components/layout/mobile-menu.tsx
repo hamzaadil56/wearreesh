@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +13,17 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { CollectionsList, CollectionsListSkeleton } from "./collections-list";
 
-const navigationLinks = [
-	{ name: "Shop", href: "/shop" },
+const bottomNavigationLinks = [
 	{ name: "About Us", href: "/about" },
+	{ name: "Contact Us", href: "/contact" },
 ];
 
-export function MobileMenu() {
-	const [showCollections, setShowCollections] = React.useState(false);
-
+export function MobileMenu({
+	CollectionLists,
+}: {
+	CollectionLists: React.ReactNode;
+}) {
 	return (
 		<Drawer shouldScaleBackground={false}>
 			<DrawerTrigger asChild>
@@ -32,74 +32,75 @@ export function MobileMenu() {
 					<span className="sr-only">Open menu</span>
 				</Button>
 			</DrawerTrigger>
-			<DrawerContent className="fixed inset-0 z-50 flex flex-col bg-background p-0 max-w-none w-screen h-screen rounded-none border-0 m-0">
-				{/* Header with Close Button */}
-				<DrawerHeader className="flex items-center justify-between p-4 border-b">
-					<DrawerTitle>Menu</DrawerTitle>
+			<DrawerContent
+				className="fixed inset-0 z-50 flex flex-col bg-background p-0 max-w-none w-screen h-screen rounded-none border-0 m-0 transition-transform duration-200 ease-out"
+				style={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					width: "100vw",
+					height: "100vh",
+					maxWidth: "none",
+					maxHeight: "none",
+					borderRadius: 0,
+					margin: 0,
+					padding: 0,
+					transitionDuration: "200ms",
+					transitionTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
+				}}
+			>
+				<DrawerHeader>
+					<DrawerTitle></DrawerTitle>
+				</DrawerHeader>
+				{/* Close Button - Fixed Top Right */}
+				<div className="absolute top-4 right-4 z-10">
 					<DrawerClose asChild>
-						<Button variant="ghost" size="icon">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border shadow-sm"
+						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close menu</span>
 						</Button>
 					</DrawerClose>
-				</DrawerHeader>
+				</div>
 
 				{/* Navigation Content */}
-				<div className="flex-1 overflow-y-auto p-4">
-					{!showCollections ? (
-						// Main Menu
-						<div className="space-y-2">
-							{navigationLinks.map((link) => {
-								if (link.name === "Shop") {
-									return (
-										<button
-											key={link.name}
-											onClick={() =>
-												setShowCollections(true)
-											}
-											className="flex w-full items-center justify-between rounded-lg p-4 text-left transition-colors hover:bg-muted"
-										>
-											<span className="text-lg font-medium">
-												{link.name}
-											</span>
-											<ChevronRight className="h-5 w-5" />
-										</button>
-									);
-								}
-								return (
-									<DrawerClose key={link.name} asChild>
-										<Link
-											href={link.href}
-											className="flex w-full items-center rounded-lg p-4 text-lg font-medium transition-colors hover:bg-muted"
-										>
-											{link.name}
-										</Link>
-									</DrawerClose>
-								);
-							})}
-						</div>
-					) : (
-						// Collections Menu
-						<div>
-							<div className="mb-4">
-								<button
-									onClick={() => setShowCollections(false)}
-									className="flex items-center text-sm text-muted-foreground hover:text-foreground"
+				<div className="flex-1 overflow-y-auto pt-8 px-6 pb-6">
+					{/* Collections Section */}
+					<div className="mb-8">{CollectionLists}</div>
+
+					{/* Horizontal Divider */}
+					<div className="border-t border-border mb-8" />
+
+					{/* Bottom Section - Profile & Navigation */}
+					<div className="space-y-4">
+						{/* Profile Button */}
+						<DrawerClose asChild>
+							<Link
+								href="/account"
+								className="flex items-center space-x-3 py-3 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
+							>
+								<User className="h-5 w-5" />
+								<span>Profile</span>
+							</Link>
+						</DrawerClose>
+
+						{/* Navigation Links */}
+						{bottomNavigationLinks.map((link) => (
+							<DrawerClose key={link.name} asChild>
+								<Link
+									href={link.href}
+									className="block py-3 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
 								>
-									← Back to Menu
-								</button>
-								<h2 className="mt-2 text-lg font-semibold">
-									Shop Collections
-								</h2>
-								<p className="text-sm text-muted-foreground">
-									Browse our curated collections
-								</p>
-							</div>
-							<Suspense fallback={<CollectionsListSkeleton />}>
-								<CollectionsList />
-							</Suspense>
-						</div>
-					)}
+									{link.name}
+								</Link>
+							</DrawerClose>
+						))}
+					</div>
 				</div>
 			</DrawerContent>
 		</Drawer>

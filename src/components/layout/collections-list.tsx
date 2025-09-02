@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getCollections } from "@/lib/shopify";
-import { Collection } from "@/lib/shopify/types";
 
 export async function CollectionsList() {
 	try {
@@ -26,32 +25,9 @@ export async function CollectionsList() {
 								? `/search/${collection.handle}`
 								: "/search"
 						}
-						className="block rounded-lg p-3 transition-colors hover:bg-muted/50"
+						className="block py-3 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
 					>
-						<div className="flex items-center space-x-3">
-							{collection.image && (
-								<div className="h-10 w-10 overflow-hidden rounded-md bg-muted">
-									<img
-										src={collection.image.url}
-										alt={
-											collection.image.altText ||
-											collection.title
-										}
-										className="h-full w-full object-cover"
-									/>
-								</div>
-							)}
-							<div className="flex-1 min-w-0">
-								<h3 className="font-medium text-sm truncate">
-									{collection.title}
-								</h3>
-								{collection.description && (
-									<p className="text-xs text-muted-foreground truncate">
-										{collection.description}
-									</p>
-								)}
-							</div>
-						</div>
+						{collection.title}
 					</Link>
 				))}
 			</div>
@@ -73,14 +49,8 @@ export function CollectionsListSkeleton() {
 	return (
 		<div className="space-y-1">
 			{Array.from({ length: 6 }).map((_, i) => (
-				<div key={i} className="block rounded-lg p-3">
-					<div className="flex items-center space-x-3">
-						<div className="h-10 w-10 rounded-md bg-muted animate-pulse" />
-						<div className="flex-1 space-y-2">
-							<div className="h-4 bg-muted rounded animate-pulse w-3/4" />
-							<div className="h-3 bg-muted rounded animate-pulse w-1/2" />
-						</div>
-					</div>
+				<div key={i} className="py-3 px-2">
+					<div className="h-6 bg-muted rounded animate-pulse w-3/4" />
 				</div>
 			))}
 		</div>

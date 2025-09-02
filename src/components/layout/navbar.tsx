@@ -6,6 +6,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { SearchInput } from "./search-input";
 import { MobileMenu } from "./mobile-menu";
 import { ShopDrawer } from "./shop-drawer";
+import { SearchDrawer } from "./search-drawer";
 import { CollectionsList } from "./collections-list";
 import { CollectionsListSkeleton } from "./collections-list";
 import { Suspense } from "react";
@@ -107,8 +108,28 @@ export function Navbar() {
 						<ModeToggle />
 					</div>
 
-					{/* Mobile Section */}
+					{/* Mobile Left Section */}
+					<div className="md:hidden flex items-center space-x-2">
+						{/* Mobile Menu - Client Component */}
+						<MobileMenu
+							CollectionLists={
+								<Suspense
+									fallback={<CollectionsListSkeleton />}
+								>
+									<CollectionsList />
+								</Suspense>
+							}
+						/>
+
+						{/* Mobile Search Drawer - Client Component */}
+						<SearchDrawer />
+					</div>
+
+					{/* Mobile Right Section */}
 					<div className="md:hidden flex items-center space-x-2 ml-auto">
+						{/* Theme Toggle - Client Component */}
+						<ModeToggle />
+
 						{/* Mobile Cart - Server Component */}
 						<Button
 							variant="ghost"
@@ -129,9 +150,6 @@ export function Navbar() {
 								<span className="sr-only">Shopping cart</span>
 							</Link>
 						</Button>
-
-						{/* Mobile Menu - Client Component */}
-						<MobileMenu />
 					</div>
 				</div>
 			</div>

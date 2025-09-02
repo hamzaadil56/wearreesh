@@ -17,7 +17,7 @@ interface ShopDrawerProps {
 	children?: React.ReactNode;
 }
 
-export function ShopDrawer({
+export function CollectionsWrapper({
 	buttonText,
 	className,
 	children,
