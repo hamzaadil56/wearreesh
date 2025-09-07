@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ProductsFilter, FilterState } from "./products-filter";
+import { ProductsFilter } from "./products-filter";
 import { ProductCard } from "@/shared/components/cards";
 import type { ProductViewModel } from "@/viewmodels/products/ProductsViewModel";
+import type { FilterState } from "@/shared/types/filters";
 
 interface ProductsWithFilterProps {
 	products: ProductViewModel[];
