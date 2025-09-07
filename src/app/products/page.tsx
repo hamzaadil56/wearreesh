@@ -2,13 +2,11 @@ import { Suspense } from "react";
 import { ProductsViewModel } from "@/viewmodels/products/ProductsViewModel";
 import { ProductRepository } from "@/models/product/ProductRepository";
 import ProductsView from "@/views/products/ProductsView";
-import { productsService } from "@/infrastructure/services/products.service";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default async function ProductsPage() {
 	try {
 		// Fetch data on the server side using the service
-		const productsData = await productsService.fetchProducts();
 
 		// Create repository and ViewModel instances
 		const repository = new ProductRepository();

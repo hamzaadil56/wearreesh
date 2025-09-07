@@ -171,14 +171,65 @@ export class FiltersViewModel extends BaseViewModel {
 			})
 		);
 
+		// Add default sizes if none found
+		const defaultSizes: FilterOption[] =
+			sizeOptions.length === 0
+				? [
+						{
+							id: "size-xxs",
+							label: "XXS",
+							value: "XXS",
+							count: 128,
+						},
+						{ id: "size-xs", label: "XS", value: "XS", count: 501 },
+						{ id: "size-s", label: "S", value: "S", count: 569 },
+						{ id: "size-m", label: "M", value: "M", count: 561 },
+						{ id: "size-l", label: "L", value: "L", count: 541 },
+						{ id: "size-xl", label: "XL", value: "XL", count: 494 },
+						{
+							id: "size-xxl",
+							label: "XXL",
+							value: "XXL",
+							count: 251,
+						},
+						{
+							id: "size-3xl",
+							label: "3XL",
+							value: "3XL",
+							count: 14,
+						},
+						{
+							id: "size-onesize",
+							label: "One Size",
+							value: "One Size",
+							count: 53,
+						},
+				  ]
+				: sizeOptions.sort((a, b) => {
+						// Custom sort order for sizes
+						const sizeOrder = [
+							"XXS",
+							"XS",
+							"S",
+							"M",
+							"L",
+							"XL",
+							"XXL",
+							"3XL",
+							"One Size",
+						];
+						return (
+							sizeOrder.indexOf(a.label) -
+							sizeOrder.indexOf(b.label)
+						);
+				  });
+
 		this.updateViewState({
 			availableOptions: {
 				categories: categoryOptions.sort((a, b) =>
 					a.label.localeCompare(b.label)
 				),
-				sizes: sizeOptions.sort((a, b) =>
-					a.label.localeCompare(b.label)
-				),
+				sizes: defaultSizes,
 				colors: colorOptions.sort((a, b) =>
 					a.label.localeCompare(b.label)
 				),
@@ -415,6 +466,5 @@ export class FiltersViewModel extends BaseViewModel {
 			...this._viewState,
 			...updates,
 		};
-		this.notifyStateChange();
 	}
 }

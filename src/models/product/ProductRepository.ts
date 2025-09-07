@@ -139,6 +139,7 @@ export class ProductRepository extends BaseRepository<Product> {
 			featuredImage: shopifyProduct.featuredImage,
 			createdAt: new Date(shopifyProduct.updatedAt),
 			updatedAt: new Date(shopifyProduct.updatedAt),
+			options: shopifyProduct.options || [],
 		});
 	}
 }

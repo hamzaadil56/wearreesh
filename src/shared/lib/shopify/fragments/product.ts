@@ -7,9 +7,7 @@ export const productFragment = /* GraphQL */ `
 		description
 		descriptionHtml
 		options {
-			id
-			name
-			values
+			...option
 		}
 		priceRange {
 			maxVariantPrice {
@@ -32,6 +30,10 @@ export const productFragment = /* GraphQL */ `
 						value
 					}
 					price {
+						amount
+						currencyCode
+					}
+					compareAtPrice {
 						amount
 						currencyCode
 					}

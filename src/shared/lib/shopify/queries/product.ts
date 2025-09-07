@@ -1,4 +1,5 @@
 import { productFragment } from "../fragments/product";
+import { optionFragment } from "../fragments/option";
 import { imageFragment } from "../fragments/image";
 import { seoFragment } from "../fragments/seo";
 
@@ -9,6 +10,7 @@ export const getProductQuery = /* GraphQL */ `
 		}
 	}
 	${productFragment}
+	${optionFragment}
 	${imageFragment}
 	${seoFragment}
 `;
@@ -33,8 +35,40 @@ export const getProductsQuery = /* GraphQL */ `
 		}
 	}
 	${productFragment}
+	${optionFragment}
 	${imageFragment}
 	${seoFragment}
+`;
+
+// NEW: Dedicated query for getting all product options
+export const getProductsOptionsQuery = /* GraphQL */ `
+	query getProductsOptions(
+		$sortKey: ProductSortKeys
+		$reverse: Boolean
+		$query: String
+		$first: Int = 100
+		$locale: LanguageCode
+	) {
+		products(
+			sortKey: $sortKey
+			reverse: $reverse
+			query: $query
+			first: $first
+		) {
+			edges {
+				node {
+					id
+					handle
+					title
+					availableForSale
+					options {
+						...option
+					}
+				}
+			}
+		}
+	}
+	${optionFragment}
 `;
 
 export const getProductRecommendationsQuery = /* GraphQL */ `
@@ -44,6 +78,7 @@ export const getProductRecommendationsQuery = /* GraphQL */ `
 		}
 	}
 	${productFragment}
+	${optionFragment}
 	${imageFragment}
 	${seoFragment}
 `;

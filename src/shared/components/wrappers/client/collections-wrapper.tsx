@@ -9,7 +9,7 @@ import {
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@/shared/components/ui/sheet";
 
 interface ShopDrawerProps {
 	buttonText: string;

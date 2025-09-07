@@ -1,4 +1,5 @@
 import { BaseModel } from "../core/BaseModel";
+import type { ProductOption } from "@/shared/lib/shopify/types";
 
 export interface ProductImage {
 	url: string;
@@ -11,6 +12,10 @@ export interface ProductVariant {
 	id: string;
 	title: string;
 	price: {
+		amount: string;
+		currencyCode: string;
+	};
+	compareAtPrice?: {
 		amount: string;
 		currencyCode: string;
 	};
@@ -50,6 +55,7 @@ export interface ProductData {
 	featuredImage?: ProductImage;
 	createdAt?: Date;
 	updatedAt?: Date;
+	options: ProductOption[];
 }
 
 export class Product extends BaseModel {
@@ -64,6 +70,7 @@ export class Product extends BaseModel {
 	public readonly tags: string[];
 	public readonly seo?: ProductSEO;
 	public readonly featuredImage?: ProductImage;
+	public readonly options: ProductOption[];
 
 	constructor(data: ProductData) {
 		super({
@@ -83,6 +90,7 @@ export class Product extends BaseModel {
 		this.tags = data.tags;
 		this.seo = data.seo;
 		this.featuredImage = data.featuredImage || data.images[0];
+		this.options = data.options;
 	}
 
 	/**
@@ -133,6 +141,39 @@ export class Product extends BaseModel {
 	 */
 	get hasMultipleVariants(): boolean {
 		return this.variants.length > 1;
+	}
+
+	/**
+	 * Get the lowest compare-at price from variants
+	 */
+	get compareAtPrice(): { amount: string; currencyCode: string } | null {
+		const variantsWithCompareAt = this.variants.filter(
+			(variant) =>
+				variant.compareAtPrice &&
+				parseFloat(variant.compareAtPrice.amount) > 0
+		);
+
+		if (variantsWithCompareAt.length === 0) return null;
+
+		const lowestCompareAt = variantsWithCompareAt.reduce(
+			(lowest, variant) => {
+				const currentPrice = parseFloat(variant.compareAtPrice!.amount);
+				const lowestPrice = parseFloat(lowest.compareAtPrice!.amount);
+				return currentPrice < lowestPrice ? variant : lowest;
+			}
+		);
+
+		return lowestCompareAt.compareAtPrice!;
+	}
+
+	/**
+	 * Get formatted compare-at price
+	 */
+	get formattedCompareAtPrice(): string | null {
+		const compareAt = this.compareAtPrice;
+		if (!compareAt) return null;
+
+		return this.formatPrice(compareAt.amount, compareAt.currencyCode);
 	}
 
 	/**

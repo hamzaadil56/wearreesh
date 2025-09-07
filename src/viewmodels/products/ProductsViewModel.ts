@@ -2,11 +2,13 @@ import { BaseViewModel } from "../core/BaseViewModel";
 import { Product } from "@/models/product/Product.model";
 import { ProductRepository } from "@/models/product/ProductRepository";
 import { SearchParams, PaginatedResult } from "@/models/core/types";
+import type { ProductOption } from "@/shared/lib/shopify/types";
 
 export interface ProductViewModel {
 	id: string;
 	title: string;
 	description: string;
+	options: ProductOption[];
 	handle: string;
 	imageUrl: string;
 	imageAlt: string;
@@ -14,6 +16,7 @@ export interface ProductViewModel {
 	currencyCode: string;
 	shortDescription: string;
 	formattedPrice: string;
+	formattedCompareAtPrice?: string;
 	availableForSale: boolean;
 	hasMultipleVariants: boolean;
 	tags: string[];
@@ -249,9 +252,12 @@ export class ProductsViewModel extends BaseViewModel {
 			currencyCode: product.priceRange.minVariantPrice.currencyCode,
 			shortDescription: product.getShortDescription(100),
 			formattedPrice: product.formattedPriceRange,
+			formattedCompareAtPrice:
+				product.formattedCompareAtPrice || undefined,
 			availableForSale: product.availableForSale,
 			hasMultipleVariants: product.hasMultipleVariants,
 			tags: product.tags,
+			options: product.options,
 		};
 	}
 
