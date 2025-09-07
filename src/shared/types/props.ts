@@ -1,3 +1,4 @@
+import type { IIndividualProductViewModel } from "@/viewmodels/products/IndividualProductViewModel";
 import type { ProductViewModel } from "@/viewmodels/products/ProductsViewModel";
 
 // ============================================================================
@@ -68,4 +69,8 @@ export interface FilterToggleProps {
 	onClick: () => void;
 	variant?: "button" | "checkbox";
 	className?: string;
+}
+
+export interface ProductOptionsProps {
+	viewModel: IIndividualProductViewModel;
 }

@@ -1,0 +1,102 @@
+"use client";
+
+import { Button } from "@/shared/components/ui/button";
+import type { ProductOptionsProps } from "@/shared/types/props";
+
+export default function ProductOptions({ viewModel }: ProductOptionsProps) {
+	const { product, selectedVariant, selectedOptions, quantity, isLoading } =
+		viewModel.viewState;
+
+	if (!product) return null;
+
+	return (
+		<div className="space-y-6">
+			{/* Product Options */}
+			{product.options.length > 0 && (
+				<div className="space-y-4">
+					{product.options.map((option) => (
+						<div key={option.name} className="space-y-2">
+							<h3 className="text-sm font-medium text-foreground">
+								{option.name}
+							</h3>
+							<div className="flex flex-wrap gap-2">
+								{option.values.map((value) => (
+									<button
+										key={value}
+										onClick={() =>
+											viewModel.selectOption(
+												option.name,
+												value
+											)
+										}
+										className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+											selectedOptions[option.name] ===
+											value
+												? "border-primary bg-primary text-primary-foreground"
+												: "border-border hover:border-muted-foreground/50"
+										}`}
+									>
+										{value}
+									</button>
+								))}
+							</div>
+						</div>
+					))}
+				</div>
+			)}
+
+			{/* Quantity and Add to Cart */}
+			<div className="space-y-4">
+				{/* Quantity Selector */}
+				<div className="flex items-center gap-4">
+					<label
+						htmlFor="quantity"
+						className="text-sm font-medium text-foreground"
+					>
+						Quantity
+					</label>
+					<div className="flex items-center border rounded-md">
+						<button
+							onClick={() => viewModel.decrementQuantity()}
+							disabled={quantity <= 1}
+							className="px-3 py-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							−
+						</button>
+						<span className="px-4 py-2 text-sm font-medium min-w-[3rem] text-center">
+							{quantity}
+						</span>
+						<button
+							onClick={() => viewModel.incrementQuantity()}
+							disabled={quantity >= 10}
+							className="px-3 py-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							+
+						</button>
+					</div>
+				</div>
+
+				{/* Add to Cart Button */}
+				<Button
+					onClick={() => viewModel.addToCart()}
+					disabled={
+						!viewModel.isSelectedVariantAvailable || isLoading
+					}
+					className="w-full h-12 text-base"
+					size="lg"
+				>
+					{isLoading ? (
+						<>
+							<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+							Adding to Cart...
+						</>
+					) : !viewModel.isSelectedVariantAvailable ? (
+						"Out of Stock"
+					) : (
+						"Add to Cart"
+					)}
+				</Button>
+			</div>
+		</div>
+	);
+}
