@@ -1,5 +1,5 @@
 import type { IIndividualProductViewModel } from "@/viewmodels/products/IndividualProductViewModel";
-import type { ProductViewModel } from "@/viewmodels/products/ProductsViewModel";
+import { ProductViewModel } from "@/viewmodels/products/useProductsViewModel";
 
 // ============================================================================
 // PRODUCTS WITH FILTERS COMPONENT PROPS

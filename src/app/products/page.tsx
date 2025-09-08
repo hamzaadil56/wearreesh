@@ -1,43 +1,57 @@
 import { Suspense } from "react";
-import { ProductsViewModel } from "@/viewmodels/products/ProductsViewModel";
 import { ProductRepository } from "@/models/product/ProductRepository";
-import ProductsView from "@/views/products/ProductsView";
+import ProductsViewClient from "@/views/products/ProductsViewClient";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default async function ProductsPage() {
 	try {
-		// Fetch data on the server side using the service
-
-		// Create repository and ViewModel instances
+		// Optionally fetch initial data on the server for better SEO and initial load
 		const repository = new ProductRepository();
-		const viewModel = new ProductsViewModel(repository);
+		const initialData = await repository.search({
+			pagination: {
+				page: 1,
+				limit: 20,
+				sortBy: "TITLE",
+				sortOrder: "asc",
+			},
+		});
 
-		// Initialize ViewModel with data
-		await viewModel.loadProducts();
+		// Map to view models for initial hydration
+		const initialProducts = initialData.items.map((product) => ({
+			id: product.id,
+			title: product.title,
+			description: product.description,
+			handle: product.handle,
+			imageUrl: product.primaryImage?.url || "/placeholder-image.jpg",
+			imageAlt: product.primaryImage?.altText || product.title,
+			price: product.priceRange.minVariantPrice.amount,
+			currencyCode: product.priceRange.minVariantPrice.currencyCode,
+			shortDescription: product.getShortDescription(100),
+			formattedPrice: product.formattedPriceRange,
+			formattedCompareAtPrice:
+				product.formattedCompareAtPrice || undefined,
+			availableForSale: product.availableForSale,
+			hasMultipleVariants: product.hasMultipleVariants,
+			tags: product.tags,
+			options: product.options,
+		}));
 
 		return (
 			<Suspense fallback={<ProductsLoadingView />}>
-				<ProductsView viewModel={viewModel} />
+				<ProductsViewClient
+					initialProducts={initialProducts}
+					initialTotalCount={initialData.totalCount}
+				/>
 			</Suspense>
 		);
 	} catch (error) {
 		console.error("Error in ProductsPage:", error);
 
+		// Return client-side component without initial data - it will load on client
 		return (
-			<div className="min-h-screen bg-background flex items-center justify-center">
-				<div className="text-center">
-					<div className="text-destructive text-6xl mb-4">⚠️</div>
-					<h1 className="text-2xl font-bold text-foreground mb-2">
-						Something went wrong
-					</h1>
-					<p className="text-muted-foreground mb-4">
-						We're having trouble loading the products right now.
-					</p>
-					<button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
-						Try Again
-					</button>
-				</div>
-			</div>
+			<Suspense fallback={<ProductsLoadingView />}>
+				<ProductsViewClient />
+			</Suspense>
 		);
 	}
 }

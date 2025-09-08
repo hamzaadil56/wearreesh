@@ -1,15 +1,28 @@
-import { ProductsWithFilter } from "@/shared/components/layout";
-import { ProductsViewModel } from "@/viewmodels/products/ProductsViewModel";
+"use client";
 
-interface ProductsViewProps {
-	viewModel: ProductsViewModel;
+import { useEffect } from "react";
+import {
+	useProductsViewModel,
+	ProductViewModel,
+} from "@/viewmodels/products/useProductsViewModel";
+import { ProductsWithFilter } from "@/shared/components/layout";
+
+interface ProductsViewClientProps {
+	// Optional initial data for SSR hydration
+	initialProducts?: ProductViewModel[];
+	initialTotalCount?: number;
 }
 
-export default function ProductsView({ viewModel }: ProductsViewProps) {
-	const { products, totalCount } = viewModel.viewState;
-	const { loading, error } = viewModel.state;
+export default function ProductsViewClient({
+	initialProducts = [],
+	initialTotalCount = 0,
+}: ProductsViewClientProps) {
+	const { products, totalCount, isLoading, error, loadProducts, clearError } =
+		useProductsViewModel(initialProducts);
 
-	if (loading) {
+	// Use initial data if available, otherwise use hook state
+
+	if (isLoading && products.length === 0) {
 		return <ProductsLoadingView />;
 	}
 
@@ -17,7 +30,10 @@ export default function ProductsView({ viewModel }: ProductsViewProps) {
 		return (
 			<ProductsErrorView
 				error={error}
-				onRetry={() => viewModel.loadProducts()}
+				onRetry={() => {
+					clearError();
+					loadProducts();
+				}}
 			/>
 		);
 	}
@@ -40,6 +56,7 @@ export default function ProductsView({ viewModel }: ProductsViewProps) {
 				<ProductsWithFilter
 					products={products}
 					totalCount={totalCount}
+					isLoading={isLoading}
 				/>
 			</div>
 		</div>

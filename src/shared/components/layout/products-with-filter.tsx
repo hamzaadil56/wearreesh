@@ -3,12 +3,13 @@
 import React, { useState, useMemo } from "react";
 import { ProductsFilter } from "./products-filter";
 import { ProductCard } from "@/shared/components/cards";
-import type { ProductViewModel } from "@/viewmodels/products/ProductsViewModel";
+import type { ProductViewModel } from "@/viewmodels/products/useProductsViewModel";
 import type { FilterState } from "@/shared/types/filters";
 
 interface ProductsWithFilterProps {
 	products: ProductViewModel[];
 	totalCount: number;
+	isLoading?: boolean;
 }
 
 interface EmptyProductsViewProps {
@@ -45,7 +46,6 @@ export function ProductsWithFilter({
 	const productsForFilter = useMemo(() => {
 		return products.map((product) => ({
 			id: product.id,
-			// Use the actual options from the ProductViewModel
 			options: product.options || [],
 			availableForSale: product.availableForSale,
 			priceRange: {
