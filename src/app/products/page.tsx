@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { ProductRepository } from "@/models/product/ProductRepository";
 import ProductsViewClient from "@/views/products/ProductsViewClient";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { mapToViewModel } from "@/shared/lib/utils";
 
 export default async function ProductsPage() {
 	try {
@@ -17,24 +18,7 @@ export default async function ProductsPage() {
 		});
 
 		// Map to view models for initial hydration
-		const initialProducts = initialData.items.map((product) => ({
-			id: product.id,
-			title: product.title,
-			description: product.description,
-			handle: product.handle,
-			imageUrl: product.primaryImage?.url || "/placeholder-image.jpg",
-			imageAlt: product.primaryImage?.altText || product.title,
-			price: product.priceRange.minVariantPrice.amount,
-			currencyCode: product.priceRange.minVariantPrice.currencyCode,
-			shortDescription: product.getShortDescription(100),
-			formattedPrice: product.formattedPriceRange,
-			formattedCompareAtPrice:
-				product.formattedCompareAtPrice || undefined,
-			availableForSale: product.availableForSale,
-			hasMultipleVariants: product.hasMultipleVariants,
-			tags: product.tags,
-			options: product.options,
-		}));
+		const initialProducts = initialData.items.map(mapToViewModel);
 
 		return (
 			<Suspense fallback={<ProductsLoadingView />}>

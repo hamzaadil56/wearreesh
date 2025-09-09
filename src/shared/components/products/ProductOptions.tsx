@@ -2,10 +2,20 @@
 
 import { Button } from "@/shared/components/ui/button";
 import type { ProductOptionsProps } from "@/shared/types/props";
+import { useProductViewModel } from "@/viewmodels/products/useProductViewModel";
 
 export default function ProductOptions({ viewModel }: ProductOptionsProps) {
-	const { product, selectedVariant, selectedOptions, quantity, isLoading } =
-		viewModel.viewState;
+	const {
+		selectedOptions,
+		quantity,
+		isLoading,
+		product,
+		selectOption,
+		decrementQuantity,
+		incrementQuantity,
+		addToCart,
+		isSelectedVariantAvailable,
+	} = useProductViewModel(viewModel);
 
 	if (!product) return null;
 
@@ -24,10 +34,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 									<button
 										key={value}
 										onClick={() =>
-											viewModel.selectOption(
-												option.name,
-												value
-											)
+											selectOption(option.name, value)
 										}
 										className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
 											selectedOptions[option.name] ===
@@ -57,7 +64,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 					</label>
 					<div className="flex items-center border rounded-md">
 						<button
-							onClick={() => viewModel.decrementQuantity()}
+							onClick={() => decrementQuantity()}
 							disabled={quantity <= 1}
 							className="px-3 py-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
 						>
@@ -67,7 +74,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 							{quantity}
 						</span>
 						<button
-							onClick={() => viewModel.incrementQuantity()}
+							onClick={() => incrementQuantity()}
 							disabled={quantity >= 10}
 							className="px-3 py-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
 						>
@@ -78,10 +85,8 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 				{/* Add to Cart Button */}
 				<Button
-					onClick={() => viewModel.addToCart()}
-					disabled={
-						!viewModel.isSelectedVariantAvailable || isLoading
-					}
+					onClick={() => addToCart()}
+					disabled={!isSelectedVariantAvailable || isLoading}
 					className="w-full h-12 text-base"
 					size="lg"
 				>
@@ -90,7 +95,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 							<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
 							Adding to Cart...
 						</>
-					) : !viewModel.isSelectedVariantAvailable ? (
+					) : !isSelectedVariantAvailable ? (
 						"Out of Stock"
 					) : (
 						"Add to Cart"

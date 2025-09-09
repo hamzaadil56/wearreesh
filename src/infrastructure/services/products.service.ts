@@ -1,5 +1,5 @@
 import { getProducts } from "@/shared/lib/shopify";
-import { Product, ProductData } from "@/models/product/Product.model";
+import { Product } from "@/models/product/Product.model";
 import type { Product as ShopifyProduct } from "@/shared/lib/shopify/types";
 
 /**

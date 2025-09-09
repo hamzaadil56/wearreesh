@@ -5,24 +5,7 @@ import { Product } from "@/models/product/Product.model";
 import { ProductRepository } from "@/models/product/ProductRepository";
 import { SearchParams, PaginatedResult } from "@/models/core/types";
 import type { ProductOption } from "@/shared/lib/shopify/types";
-
-export interface ProductViewModel {
-	id: string;
-	title: string;
-	description: string;
-	options: ProductOption[];
-	handle: string;
-	imageUrl: string;
-	imageAlt: string;
-	price: string;
-	currencyCode: string;
-	shortDescription: string;
-	formattedPrice: string;
-	formattedCompareAtPrice?: string;
-	availableForSale: boolean;
-	hasMultipleVariants: boolean;
-	tags: string[];
-}
+import { ProductViewModel } from "@/shared/types/viewModels";
 
 export interface ProductsViewState {
 	products: ProductViewModel[];
@@ -97,6 +80,9 @@ export function useProductsViewModel(
 			id: product.id,
 			title: product.title,
 			description: product.description,
+			variants: product.variants,
+			images: product.images,
+			primaryImage: primaryImage || product.images?.[0],
 			handle: product.handle,
 			imageUrl: primaryImage?.url || "/placeholder-image.jpg",
 			imageAlt: primaryImage?.altText || product.title,

@@ -5,6 +5,7 @@ import {
 	ProductImageGallery,
 	ProductOptions,
 } from "@/shared/components/products";
+import Link from "next/link";
 
 interface ProductViewProps {
 	viewModel: IIndividualProductViewModel;
@@ -24,7 +25,7 @@ export default function ProductView({ viewModel }: ProductViewProps) {
 						The product you're looking for doesn't exist.
 					</p>
 					<Button asChild>
-						<a href="/products">Back to Products</a>
+						<Link href="/products">Back to Products</Link>
 					</Button>
 				</div>
 			</div>

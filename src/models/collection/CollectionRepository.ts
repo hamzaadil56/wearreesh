@@ -1,5 +1,5 @@
 import { BaseRepository } from "../core/Repository";
-import { Collection, CollectionData } from "./Collection.model";
+import { Collection } from "./Collection.model";
 import { getCollections, getCollection } from "@/shared/lib/shopify";
 import type { Collection as ShopifyCollection } from "@/shared/lib/shopify/types";
 
@@ -44,24 +44,19 @@ export class CollectionRepository extends BaseRepository<Collection> {
 	}
 
 	// Not applicable for read-only collection data
-	async create(
-		entity: Omit<Collection, "id" | "createdAt" | "updatedAt">
-	): Promise<Collection> {
+	async create(): Promise<Collection> {
 		throw new Error(
 			"Collection creation not supported through Shopify Storefront API"
 		);
 	}
 
-	async update(
-		id: string,
-		updates: Partial<Collection>
-	): Promise<Collection> {
+	async update(): Promise<Collection> {
 		throw new Error(
 			"Collection updates not supported through Shopify Storefront API"
 		);
 	}
 
-	async delete(id: string): Promise<void> {
+	async delete(): Promise<void> {
 		throw new Error(
 			"Collection deletion not supported through Shopify Storefront API"
 		);

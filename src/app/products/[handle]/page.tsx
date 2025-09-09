@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProductRepository } from "@/models/product/ProductRepository";
-import { IndividualProductViewModel } from "@/viewmodels/products/IndividualProductViewModel";
-import ProductView from "@/views/products/ProductView";
+import ProductViewClient from "@/views/products/ProductViewClient";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { ProductViewModel } from "@/shared/types/viewModels";
+import { mapToViewModel } from "@/shared/lib/utils";
 
 interface ProductPageProps {
 	params: {
@@ -11,42 +12,29 @@ interface ProductPageProps {
 	};
 }
 
-export async function generateMetadata({ params }: ProductPageProps) {
+export async function getProductData({
+	params,
+}: ProductPageProps): Promise<ProductViewModel | null> {
 	const repository = new ProductRepository();
 	const product = await repository.findByHandle(params.handle);
 
 	if (!product) {
-		return {
-			title: "Product Not Found",
-		};
+		return null;
 	}
 
-	return {
-		title: product.title,
-		description: product.description || product.getShortDescription(),
-		openGraph: {
-			title: product.title,
-			description: product.description || product.getShortDescription(),
-			images: product.primaryImage ? [product.primaryImage.url] : [],
-		},
-	};
+	return mapToViewModel(product);
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
 	try {
-		const repository = new ProductRepository();
-		const product = await repository.findByHandle(params.handle);
-
+		const product = await getProductData({ params });
 		if (!product) {
 			notFound();
 		}
 
-		const viewModel = new IndividualProductViewModel(repository);
-		await viewModel.loadProduct(product.handle);
-
 		return (
 			<Suspense fallback={<ProductLoadingView />}>
-				<ProductView viewModel={viewModel} />
+				<ProductViewClient product={product} />
 			</Suspense>
 		);
 	} catch (error) {

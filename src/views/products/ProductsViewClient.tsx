@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-	useProductsViewModel,
-	ProductViewModel,
-} from "@/viewmodels/products/useProductsViewModel";
+import { useProductsViewModel } from "@/viewmodels/products/useProductsViewModel";
 import { ProductsWithFilter } from "@/shared/components/layout";
+import { ProductViewModel } from "@/shared/types/viewModels";
 
 interface ProductsViewClientProps {
 	// Optional initial data for SSR hydration

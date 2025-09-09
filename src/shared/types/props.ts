@@ -1,5 +1,4 @@
-import type { IIndividualProductViewModel } from "@/viewmodels/products/IndividualProductViewModel";
-import { ProductViewModel } from "@/viewmodels/products/useProductsViewModel";
+import { ProductViewModel } from "@/shared/types/viewModels";
 
 // ============================================================================
 // PRODUCTS WITH FILTERS COMPONENT PROPS
@@ -72,5 +71,5 @@ export interface FilterToggleProps {
 }
 
 export interface ProductOptionsProps {
-	viewModel: IIndividualProductViewModel;
+	viewModel: ProductViewModel;
 }

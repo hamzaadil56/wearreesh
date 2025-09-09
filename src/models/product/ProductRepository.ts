@@ -1,5 +1,5 @@
 import { BaseRepository } from "../core/Repository";
-import { Product, ProductData } from "./Product.model";
+import { Product } from "./Product.model";
 import { PaginatedResult, SearchParams } from "../core/types";
 // Import from shared/lib (using the alias)
 import {
@@ -100,21 +100,19 @@ export class ProductRepository extends BaseRepository<Product> {
 	}
 
 	// Not applicable for read-only product data
-	async create(
-		entity: Omit<Product, "id" | "createdAt" | "updatedAt">
-	): Promise<Product> {
+	async create(): Promise<Product> {
 		throw new Error(
 			"Product creation not supported through Shopify Storefront API"
 		);
 	}
 
-	async update(id: string, updates: Partial<Product>): Promise<Product> {
+	async update(): Promise<Product> {
 		throw new Error(
 			"Product updates not supported through Shopify Storefront API"
 		);
 	}
 
-	async delete(id: string): Promise<void> {
+	async delete(): Promise<void> {
 		throw new Error(
 			"Product deletion not supported through Shopify Storefront API"
 		);

@@ -3,7 +3,14 @@
 import React, { useState, useMemo } from "react";
 import { ProductsFilter } from "./products-filter";
 import { ProductCard } from "@/shared/components/cards";
-import type { ProductViewModel } from "@/viewmodels/products/useProductsViewModel";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
+import type { ProductViewModel } from "@/shared/types/viewModels";
 import type { FilterState } from "@/shared/types/filters";
 
 interface ProductsWithFilterProps {
@@ -36,11 +43,9 @@ function EmptyProductsView({ hasFilters }: EmptyProductsViewProps) {
 	);
 }
 
-export function ProductsWithFilter({
-	products,
-	totalCount,
-}: ProductsWithFilterProps) {
+export function ProductsWithFilter({ products }: ProductsWithFilterProps) {
 	const [activeFilters, setActiveFilters] = useState<FilterState>({});
+	const [sortBy, setSortBy] = useState("Relevance");
 
 	// Convert ProductViewModel to format expected by ProductsFilter
 	const productsForFilter = useMemo(() => {
@@ -108,13 +113,45 @@ export function ProductsWithFilter({
 			{/* Main Content */}
 			<div className="flex-1 space-y-6">
 				{/* Results Header */}
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-					<p className="text-sm text-muted-foreground">
-						Showing {filteredProducts.length} of {totalCount}{" "}
-						products
+				<div className="flex items-center justify-between">
+					<p className="text-sm text-gray-600">
+						{filteredProducts.length} Items
 					</p>
 
-					{/* Sort functionality can be added here if needed */}
+					{/* Sort Dropdown */}
+					<DropdownMenu>
+						<DropdownMenuTrigger className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+							Sort By
+							<ChevronDown className="w-4 h-4" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem
+								onClick={() => setSortBy("Relevance")}
+							>
+								Relevance
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => setSortBy("Price: Low to High")}
+							>
+								Price: Low to High
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => setSortBy("Price: High to Low")}
+							>
+								Price: High to Low
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => setSortBy("Newest")}
+							>
+								Newest
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => setSortBy("Best Selling")}
+							>
+								Best Selling
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
 
 				{/* Products Grid */}
