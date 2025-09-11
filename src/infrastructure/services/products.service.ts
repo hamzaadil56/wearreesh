@@ -1,6 +1,9 @@
-import { getProducts } from "@/shared/lib/shopify";
+import { getProducts, getProductsOptions } from "@/shared/lib/shopify";
 import { Product } from "@/models/product/Product.model";
-import type { Product as ShopifyProduct } from "@/shared/lib/shopify/types";
+import type {
+	Product as ShopifyProduct,
+	ProductOption,
+} from "@/shared/lib/shopify/types";
 
 /**
  * Products Service
@@ -39,6 +42,55 @@ export class ProductsService {
 		} catch (error) {
 			console.error("Error fetching products:", error);
 			throw new Error("Failed to fetch products");
+		}
+	}
+
+	/**
+	 * Fetch product options for filtering
+	 */
+	async fetchProductsOptions(): Promise<
+		Array<{
+			name: string;
+			values: Array<{ value: string; count: number }>;
+		}>
+	> {
+		try {
+			const productsWithOptions = await getProductsOptions({});
+
+			// Extract and aggregate all unique options
+			const optionsMap = new Map<string, Map<string, number>>();
+
+			productsWithOptions.forEach((product) => {
+				// Only count available products
+				if (!product.availableForSale) return;
+
+				product.options.forEach((option) => {
+					if (!optionsMap.has(option.name)) {
+						optionsMap.set(option.name, new Map());
+					}
+
+					const valuesMap = optionsMap.get(option.name)!;
+					option.values.forEach((value) => {
+						valuesMap.set(value, (valuesMap.get(value) || 0) + 1);
+					});
+				});
+			});
+
+			// Convert to the expected format
+			return Array.from(optionsMap.entries()).map(
+				([name, valuesMap]) => ({
+					name,
+					values: Array.from(valuesMap.entries()).map(
+						([value, count]) => ({
+							value,
+							count,
+						})
+					),
+				})
+			);
+		} catch (error) {
+			console.error("Error fetching product options:", error);
+			throw new Error("Failed to fetch product options");
 		}
 	}
 

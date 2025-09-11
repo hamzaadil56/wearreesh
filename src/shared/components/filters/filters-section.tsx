@@ -1,11 +1,11 @@
 import React from "react";
 import { Accordion } from "@/shared/components/ui/accordion";
-import { FilterSection } from "./filter-section";
+import { FilterItem } from "./filter-item";
 import { AvailabilityFilter } from "./availability-filter";
 import { OptionValue } from "./option-value";
 import type { FilterState } from "@/shared/types/filters";
 
-interface FilterAccordionProps {
+interface FilterSectionProps {
 	optionsData: Array<{
 		name: string;
 		values: Array<{ value: string; count: number }>;
@@ -16,13 +16,13 @@ interface FilterAccordionProps {
 	onAvailabilityChange: (available: boolean) => void;
 }
 
-export function FilterAccordion({
+export function FilterSection({
 	optionsData,
 	filters,
 	availableOnly,
 	onOptionToggle,
 	onAvailabilityChange,
-}: FilterAccordionProps) {
+}: FilterSectionProps) {
 	// Create default values for accordion (sections that should be open by default)
 	const getDefaultAccordionValues = () => {
 		const defaultValues = ["availability"]; // Always open availability
@@ -43,16 +43,16 @@ export function FilterAccordion({
 			className="w-full"
 		>
 			{/* Availability Filter */}
-			<FilterSection value="availability" title="Availability">
+			<FilterItem value="availability" title="Availability">
 				<AvailabilityFilter
 					availableOnly={availableOnly}
 					onChange={onAvailabilityChange}
 				/>
-			</FilterSection>
+			</FilterItem>
 
 			{/* Dynamic Option Filters */}
 			{optionsData.map((option) => (
-				<FilterSection
+				<FilterItem
 					key={option.name}
 					value={option.name.toLowerCase()}
 					title={option.name}
@@ -73,7 +73,7 @@ export function FilterAccordion({
 							/>
 						))}
 					</div>
-				</FilterSection>
+				</FilterItem>
 			))}
 		</Accordion>
 	);

@@ -3,27 +3,25 @@
 import React from "react";
 import { cn } from "@/shared/lib/utils";
 import { FilterHeader } from "@/shared/components/filters/filter-header";
-import { FilterAccordion } from "@/shared/components/filters/filter-accordion";
+import { FilterSection } from "@/shared/components/filters/filters-section";
 import { ActiveFilters } from "@/shared/components/filters/active-filters";
-import { useFilterLogic } from "@/shared/hooks/useFilterLogic";
+import { useUrlFilterLogic } from "@/shared/hooks/useUrlFilterLogic";
 import type { ProductsFilterProps } from "@/shared/types/filters";
 
 export function ProductsFilter({
-	products,
-	onFilterChange,
+	optionsData,
 	className,
 }: ProductsFilterProps) {
 	const {
 		filters,
 		availableOnly,
-		optionsData,
 		activeFilterCount,
 		handleOptionToggle,
 		handleAvailabilityChange,
 		clearAllFilters,
 		removeFilter,
 		removeAvailability,
-	} = useFilterLogic({ products, onFilterChange });
+	} = useUrlFilterLogic({ optionsData });
 
 	return (
 		<div
@@ -37,7 +35,7 @@ export function ProductsFilter({
 				onClearAll={clearAllFilters}
 			/>
 
-			<FilterAccordion
+			<FilterSection
 				optionsData={optionsData}
 				filters={filters}
 				availableOnly={availableOnly}

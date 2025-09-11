@@ -5,16 +5,11 @@ export interface FilterState {
 }
 
 export interface ProductsFilterProps {
-	products: Array<{
-		id: string;
-		options: ProductOption[];
-		availableForSale: boolean;
-		priceRange: {
-			minVariantPrice: { amount: string };
-			maxVariantPrice: { amount: string };
-		};
+	optionsData: Array<{
+		name: string;
+		values: Array<{ value: string; count: number }>;
 	}>;
-	onFilterChange: (filters: FilterState) => void;
+	onFilterChange?: (filters: FilterState) => void;
 	className?: string;
 }
 

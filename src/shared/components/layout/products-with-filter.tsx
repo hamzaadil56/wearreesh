@@ -11,7 +11,6 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import type { ProductViewModel } from "@/shared/types/viewModels";
-import type { FilterState } from "@/shared/types/filters";
 
 interface ProductsWithFilterProps {
 	products: ProductViewModel[];
@@ -44,7 +43,6 @@ function EmptyProductsView({ hasFilters }: EmptyProductsViewProps) {
 }
 
 export function ProductsWithFilter({ products }: ProductsWithFilterProps) {
-	const [activeFilters, setActiveFilters] = useState<FilterState>({});
 	const [sortBy, setSortBy] = useState("Relevance");
 
 	// Convert ProductViewModel to format expected by ProductsFilter
@@ -60,54 +58,11 @@ export function ProductsWithFilter({ products }: ProductsWithFilterProps) {
 		}));
 	}, [products]);
 
-	// Apply filters to products
-	const filteredProducts = useMemo(() => {
-		if (Object.keys(activeFilters).length === 0) {
-			return products;
-		}
-
-		return products.filter((product) => {
-			// Apply availability filter
-			if (
-				activeFilters.available &&
-				activeFilters.available.includes("true")
-			) {
-				if (!product.availableForSale) return false;
-			}
-
-			// Apply option filters
-			for (const [optionName, selectedValues] of Object.entries(
-				activeFilters
-			)) {
-				if (optionName === "available" || selectedValues.length === 0)
-					continue;
-
-				// Check if the product has this option with any of the selected values
-				const hasMatchingOption = product.options?.some(
-					(option) =>
-						option.name === optionName &&
-						option.values.some((value) =>
-							selectedValues.includes(value)
-						)
-				);
-
-				if (!hasMatchingOption) return false;
-			}
-
-			return true;
-		});
-	}, [products, activeFilters]);
-
-	const hasActiveFilters = Object.keys(activeFilters).length > 0;
-
 	return (
 		<div className="flex gap-8">
 			{/* Sidebar Filters */}
 			<div className="w-80 flex-shrink-0">
-				<ProductsFilter
-					products={productsForFilter}
-					onFilterChange={setActiveFilters}
-				/>
+				<ProductsFilter products={productsForFilter} />
 			</div>
 
 			{/* Main Content */}
@@ -115,7 +70,7 @@ export function ProductsWithFilter({ products }: ProductsWithFilterProps) {
 				{/* Results Header */}
 				<div className="flex items-center justify-between">
 					<p className="text-sm text-gray-600">
-						{filteredProducts.length} Items
+						{products.length} Items
 					</p>
 
 					{/* Sort Dropdown */}
@@ -155,14 +110,14 @@ export function ProductsWithFilter({ products }: ProductsWithFilterProps) {
 				</div>
 
 				{/* Products Grid */}
-				{filteredProducts.length > 0 ? (
+				{products.length > 0 ? (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-						{filteredProducts.map((product) => (
+						{products.map((product) => (
 							<ProductCard key={product.id} product={product} />
 						))}
 					</div>
 				) : (
-					<EmptyProductsView hasFilters={hasActiveFilters} />
+					<EmptyProductsView hasFilters={false} />
 				)}
 			</div>
 		</div>

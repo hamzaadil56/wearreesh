@@ -47,7 +47,6 @@ export const getProductsOptionsQuery = /* GraphQL */ `
 		$reverse: Boolean
 		$query: String
 		$first: Int = 100
-		$locale: LanguageCode
 	) {
 		products(
 			sortKey: $sortKey

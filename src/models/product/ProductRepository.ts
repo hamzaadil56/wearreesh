@@ -6,8 +6,12 @@ import {
 	getProducts,
 	getProduct,
 	getCollectionProducts,
+	getProductsOptions,
 } from "@/shared/lib/shopify";
-import type { Product as ShopifyProduct } from "@/shared/lib/shopify/types";
+import type {
+	ProductOption,
+	Product as ShopifyProduct,
+} from "@/shared/lib/shopify/types";
 
 export class ProductRepository extends BaseRepository<Product> {
 	async findById(id: string): Promise<Product | null> {
@@ -116,6 +120,52 @@ export class ProductRepository extends BaseRepository<Product> {
 		throw new Error(
 			"Product deletion not supported through Shopify Storefront API"
 		);
+	}
+
+	async getProductsOptions(): Promise<{
+		options: Array<{
+			name: string;
+			values: Array<{ value: string; count: number }>;
+		}>;
+	}> {
+		const result = await this.safeOperation(async () => {
+			const productsWithOptions = await getProductsOptions({});
+
+			// Extract and aggregate all unique options
+			const optionsMap = new Map<string, Map<string, number>>();
+
+			productsWithOptions.forEach((product) => {
+				// Only count available products
+				if (!product.availableForSale) return;
+
+				product.options.forEach((option) => {
+					if (!optionsMap.has(option.name)) {
+						optionsMap.set(option.name, new Map());
+					}
+
+					const valuesMap = optionsMap.get(option.name)!;
+					option.values.forEach((value) => {
+						valuesMap.set(value, (valuesMap.get(value) || 0) + 1);
+					});
+				});
+			});
+
+			// Convert to the expected format
+			const options = Array.from(optionsMap.entries()).map(
+				([name, valuesMap]) => ({
+					name,
+					values: Array.from(valuesMap.entries()).map(
+						([value, count]) => ({
+							value,
+							count,
+						})
+					),
+				})
+			);
+
+			return { options };
+		}, "Failed to fetch products options");
+		return result.success ? result.data : { options: [] };
 	}
 
 	/**

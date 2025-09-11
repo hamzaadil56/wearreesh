@@ -265,3 +265,21 @@ export type ShopifyProductsOperation = {
 		sortKey?: string;
 	};
 };
+
+export type ShopifyProductsOptionsOperation = {
+	data: {
+		products: Connection<{
+			id: string;
+			handle: string;
+			title: string;
+			availableForSale: boolean;
+			options: ProductOption[];
+		}>;
+	};
+	variables: {
+		query?: string;
+		reverse?: boolean;
+		sortKey?: string;
+		first?: number;
+	};
+};

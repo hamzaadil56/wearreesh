@@ -5,13 +5,13 @@ import {
 	AccordionContent,
 } from "@/shared/components/ui/accordion";
 
-interface FilterSectionProps {
+interface FilterItemProps {
 	value: string;
 	title: string;
 	children: React.ReactNode;
 }
 
-export function FilterSection({ value, title, children }: FilterSectionProps) {
+export function FilterItem({ value, title, children }: FilterItemProps) {
 	return (
 		<AccordionItem value={value}>
 			<AccordionTrigger className="text-base font-normal text-black hover:text-gray-700 cursor-pointer">

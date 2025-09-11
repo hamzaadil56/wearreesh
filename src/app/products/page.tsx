@@ -3,8 +3,17 @@ import { ProductRepository } from "@/models/product/ProductRepository";
 import ProductsViewClient from "@/views/products/ProductsViewClient";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { mapToViewModel } from "@/shared/lib/utils";
+import { ProductCard } from "@/shared/components/cards/ProductCard";
+import ProductsView from "@/views/products/ProductsView";
 
-export default async function ProductsPage() {
+export default async function ProductsPage(props: {
+	searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+	const searchParams = await props.searchParams;
+	const { sort, q: searchValue } = searchParams as { [key: string]: string };
+
+	console.log(sort, searchValue);
+
 	try {
 		// Optionally fetch initial data on the server for better SEO and initial load
 		const repository = new ProductRepository();
@@ -15,6 +24,7 @@ export default async function ProductsPage() {
 				sortBy: "TITLE",
 				sortOrder: "asc",
 			},
+			query: searchValue,
 		});
 
 		// Map to view models for initial hydration
@@ -22,10 +32,7 @@ export default async function ProductsPage() {
 
 		return (
 			<Suspense fallback={<ProductsLoadingView />}>
-				<ProductsViewClient
-					initialProducts={initialProducts}
-					initialTotalCount={initialData.totalCount}
-				/>
+				<ProductsView products={initialProducts} />
 			</Suspense>
 		);
 	} catch (error) {

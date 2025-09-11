@@ -26,6 +26,7 @@ import {
 	getProductQuery,
 	getProductRecommendationsQuery,
 	getProductsQuery,
+	getProductsOptionsQuery,
 } from "./queries/product";
 import {
 	Cart,
@@ -35,6 +36,7 @@ import {
 	Menu,
 	Page,
 	Product,
+	ProductOption,
 	ShopifyAddToCartOperation,
 	ShopifyCart,
 	ShopifyCartOperation,
@@ -50,6 +52,7 @@ import {
 	ShopifyProductOperation,
 	ShopifyProductRecommendationsOperation,
 	ShopifyProductsOperation,
+	ShopifyProductsOptionsOperation,
 	ShopifyRemoveFromCartOperation,
 	ShopifyUpdateCartOperation,
 } from "./types";
@@ -437,6 +440,39 @@ export async function getProducts({
 	});
 
 	return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+}
+
+export async function getProductsOptions({
+	query,
+	reverse,
+	sortKey,
+	first = 100,
+}: {
+	query?: string;
+	reverse?: boolean;
+	sortKey?: string;
+	first?: number;
+} = {}): Promise<
+	Array<{
+		id: string;
+		handle: string;
+		title: string;
+		availableForSale: boolean;
+		options: ProductOption[];
+	}>
+> {
+	const res = await shopifyFetch<ShopifyProductsOptionsOperation>({
+		query: getProductsOptionsQuery,
+		tags: [TAGS.products],
+		variables: {
+			query,
+			reverse,
+			sortKey,
+			first,
+		},
+	});
+
+	return removeEdgesAndNodes(res.body.data.products);
 }
 
 // This is called from `app/api/revalidate.ts` so providers can update product re-fetching logic.
