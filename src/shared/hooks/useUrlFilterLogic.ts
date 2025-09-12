@@ -94,7 +94,7 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 			const url = queryString
 				? `${pathname}?q=${encodeURIComponent(queryString)}`
 				: pathname;
-			router.replace(url); // Use replace instead of push
+			router.push(url); // Use replace instead of push
 		},
 		[router, pathname, buildQueryString]
 	);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ProductsFilter } from "./products-filter";
+import { ProductsFilter } from "./products/products-filter";
 import { ProductCard } from "@/shared/components/cards";
 import {
 	DropdownMenu,
@@ -62,7 +62,7 @@ export function ProductsWithFilter({ products }: ProductsWithFilterProps) {
 		<div className="flex gap-8">
 			{/* Sidebar Filters */}
 			<div className="w-80 flex-shrink-0">
-				<ProductsFilter products={productsForFilter} />
+				{/* <ProductsFilter products={productsForFilter} /> */}
 			</div>
 
 			{/* Main Content */}

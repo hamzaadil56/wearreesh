@@ -1,9 +1,10 @@
 export { Navbar } from "./navbar";
 export { SearchInput } from "./search-input";
 export { MobileMenu } from "./mobile-menu";
-export { ProductsFilter } from "./products-filter";
+export { ProductsFilter } from "./products/products-filter";
 export { ProductsWithFilter } from "./products-with-filter";
 export { SearchComponent, useSearch } from "./search";
 export { ShopDrawer } from "./shop-drawer";
 export { SearchDrawer } from "./search-drawer";
 export { CollectionsList, CollectionsListSkeleton } from "./collections-list";
+export { SortDropdown } from "./products/sort-dropdown";
