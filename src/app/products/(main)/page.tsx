@@ -5,6 +5,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { mapToViewModel } from "@/shared/lib/utils";
 import { ProductCard } from "@/shared/components/cards/ProductCard";
 import ProductsView from "@/views/products/ProductsView";
+import { SortDropdown } from "@/shared/components/layout/products/sort-dropdown";
 
 export default async function ProductsPage(props: {
 	searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -31,19 +32,25 @@ export default async function ProductsPage(props: {
 		const initialProducts = initialData.items.map(mapToViewModel);
 
 		return (
-			<Suspense fallback={<ProductsLoadingView />}>
-				<ProductsView products={initialProducts} />
-			</Suspense>
+			<div className="space-y-6">
+				{/* Header with Item Count and Sort */}
+				<div className="flex items-center justify-between">
+					<p className="text-sm text-gray-600">
+						{initialProducts.length} Items
+					</p>
+					<SortDropdown />
+				</div>
+
+				{/* Products Grid */}
+				<Suspense fallback={<ProductsLoadingView />}>
+					<ProductsView products={initialProducts} />
+				</Suspense>
+			</div>
 		);
 	} catch (error) {
 		console.error("Error in ProductsPage:", error);
 
-		// Return client-side component without initial data - it will load on client
-		return (
-			<Suspense fallback={<ProductsLoadingView />}>
-				<ProductsViewClient />
-			</Suspense>
-		);
+		return <ProductsLoadingView />;
 	}
 }
 

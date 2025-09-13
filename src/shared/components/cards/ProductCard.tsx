@@ -8,22 +8,6 @@ import type { ProductCardProps } from "@/shared/types/props";
 
 export function ProductCard({ product }: ProductCardProps) {
 	// Calculate discount percentage if compare-at price exists
-	const discountPercentage =
-		product.formattedCompareAtPrice && product.price
-			? Math.round(
-					((parseFloat(
-						product.formattedCompareAtPrice.replace(/[^0-9.]/g, "")
-					) -
-						parseFloat(product.price)) /
-						parseFloat(
-							product.formattedCompareAtPrice.replace(
-								/[^0-9.]/g,
-								""
-							)
-						)) *
-						100
-			  )
-			: null;
 
 	return (
 		<Link
@@ -39,13 +23,6 @@ export function ProductCard({ product }: ProductCardProps) {
 					className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
 				/>
 
-				{/* Discount Badge */}
-				{discountPercentage && discountPercentage > 0 && (
-					<div className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-						-{discountPercentage}%
-					</div>
-				)}
-
 				{/* Out of Stock Overlay */}
 				{!product.availableForSale && (
 					<div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
@@ -60,10 +37,6 @@ export function ProductCard({ product }: ProductCardProps) {
 				<h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 mb-2">
 					{product.title}
 				</h3>
-
-				<p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-					{product.shortDescription}
-				</p>
 
 				<div className="flex items-end justify-between">
 					<div className="flex flex-col">

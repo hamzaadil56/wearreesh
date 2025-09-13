@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { Navbar } from "@/shared/components/layout";
 import "./globals.css";
@@ -11,6 +12,10 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
+	subsets: ["latin"],
+});
+
+const merriweather = Merriweather({
 	subsets: ["latin"],
 });
 
@@ -26,9 +31,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
+			<body className={`${merriweather.className}  antialiased`}>
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"

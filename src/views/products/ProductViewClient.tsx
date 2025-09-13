@@ -113,7 +113,7 @@ export default function ProductViewClient({ product }: ProductViewClientProps) {
 
 							{/* Availability */}
 							<div className="flex items-center gap-2">
-								{isAvailableForSale ? (
+								{product.availableForSale ? (
 									<>
 										<div className="h-2 w-2 rounded-full bg-green-500" />
 										<span className="text-sm text-green-600 dark:text-green-400">
