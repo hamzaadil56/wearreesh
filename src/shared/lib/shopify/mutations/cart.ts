@@ -16,16 +16,17 @@ export const addToCartMutation = /* GraphQL */ `
 `;
 
 export const createCartMutation = /* GraphQL */ `
-	mutation createCart($lineItems: [CartLineInput!]) {
-		cartCreate(input: { lines: $lineItems }) {
+	mutation createCart($input: CartInput) {
+		cartCreate(input: $input) {
 			cart {
-				...cart
+				checkoutUrl
+			}
+			userErrors {
+				field
+				message
 			}
 		}
 	}
-	${cartFragment}
-	${imageFragment}
-	${seoFragment}
 `;
 
 export const editCartItemsMutation = /* GraphQL */ `

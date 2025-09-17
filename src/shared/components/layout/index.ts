@@ -8,3 +8,4 @@ export { ShopDrawer } from "./shop-drawer";
 export { SearchDrawer } from "./search-drawer";
 export { CollectionsList, CollectionsListSkeleton } from "./collections-list";
 export { SortDropdown } from "./products/sort-dropdown";
+export { CartButton } from "./cart-button";

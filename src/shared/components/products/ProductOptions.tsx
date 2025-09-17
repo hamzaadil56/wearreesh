@@ -3,6 +3,7 @@
 import { Button } from "@/shared/components/ui/button";
 import type { ProductOptionsProps } from "@/shared/types/props";
 import { useProductViewModel } from "@/viewmodels/products/useProductViewModel";
+import { useCart } from "@/shared/components/cart";
 
 export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 	const {
@@ -13,9 +14,10 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 		selectOption,
 		decrementQuantity,
 		incrementQuantity,
-		addToCart,
-		isSelectedVariantAvailable,
+		selectedVariant,
 	} = useProductViewModel(viewModel);
+
+	const { addToCart, isLoading: cartLoading } = useCart();
 
 	if (!product) return null;
 
@@ -85,17 +87,26 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 				{/* Add to Cart Button */}
 				<Button
-					onClick={() => addToCart()}
-					disabled={!isSelectedVariantAvailable || isLoading}
+					onClick={async () => {
+						if (selectedVariant) {
+							await addToCart(selectedVariant.id, quantity);
+						}
+					}}
+					disabled={
+						!selectedVariant ||
+						!selectedVariant.availableForSale ||
+						cartLoading
+					}
 					className="w-full h-12 text-base"
 					size="lg"
 				>
-					{isLoading ? (
+					{cartLoading ? (
 						<>
 							<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
 							Adding to Cart...
 						</>
-					) : !isSelectedVariantAvailable ? (
+					) : !selectedVariant ||
+					  !selectedVariant.availableForSale ? (
 						"Out of Stock"
 					) : (
 						"Add to Cart"

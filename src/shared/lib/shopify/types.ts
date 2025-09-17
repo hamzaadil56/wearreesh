@@ -139,8 +139,79 @@ export type ShopifyCartOperation = {
 	};
 };
 
+export type AttributeInput = {
+	key: string;
+	value: string;
+};
+
+export type CartLineInput = {
+	merchandiseId: string;
+	quantity?: number;
+	attributes?: AttributeInput[];
+	sellingPlanId?: string;
+};
+
+export type CartBuyerIdentityInput = {
+	email?: string;
+	phone?: string;
+	companyLocationId?: string;
+	countryCode?: string;
+	customerAccessToken?: string;
+	preferences?: Record<string, any>;
+};
+
+export type DeliveryAddress = {
+	countryCode?: string;
+	// Add other address fields as needed
+	[key: string]: any;
+};
+
+export type AddressInput = {
+	deliveryAddress?: DeliveryAddress;
+	// Add other address fields as needed
+	[key: string]: any;
+};
+
+export type CartSelectableAddressInput = {
+	address?: AddressInput;
+	// Add other fields as needed
+	[key: string]: any;
+};
+
+export type CartDeliveryInput = {
+	addresses?: CartSelectableAddressInput[];
+};
+
+export type CartInputMetafieldInput = {
+	key: string;
+	value: string;
+	type: string;
+};
+
+export type CartInput = {
+	attributes?: AttributeInput[];
+	lines?: CartLineInput[];
+	discountCodes?: string[];
+	giftCardCodes?: string[];
+	note?: string;
+	buyerIdentity?: CartBuyerIdentityInput;
+	delivery?: CartDeliveryInput;
+	metafields?: CartInputMetafieldInput[];
+};
+
 export type ShopifyCreateCartOperation = {
-	data: { cartCreate: { cart: ShopifyCart } };
+	data: {
+		cartCreate: {
+			cart: ShopifyCart;
+			userErrors: {
+				field: string[];
+				message: string;
+			}[];
+		};
+	};
+	variables: {
+		input: CartInput;
+	};
 };
 
 export type ShopifyAddToCartOperation = {
@@ -151,10 +222,7 @@ export type ShopifyAddToCartOperation = {
 	};
 	variables: {
 		cartId: string;
-		lines: {
-			merchandiseId: string;
-			quantity: number;
-		}[];
+		lines: CartLineInput[];
 	};
 };
 
@@ -180,7 +248,7 @@ export type ShopifyUpdateCartOperation = {
 		cartId: string;
 		lines: {
 			id: string;
-			merchandiseId: string;
+			merchandiseId?: string;
 			quantity: number;
 		}[];
 	};

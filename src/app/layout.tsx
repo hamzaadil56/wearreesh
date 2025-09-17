@@ -2,18 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/theme-provider";
+import { CartProvider } from "@/shared/components/cart";
 import { Navbar } from "@/shared/components/layout";
 import "./globals.css";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
 
 const merriweather = Merriweather({
 	subsets: ["latin"],
@@ -38,8 +29,10 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<Navbar />
-					<main className="flex-1">{children}</main>
+					<CartProvider>
+						<Navbar />
+						<main className="flex-1">{children}</main>
+					</CartProvider>
 				</ThemeProvider>
 			</body>
 		</html>

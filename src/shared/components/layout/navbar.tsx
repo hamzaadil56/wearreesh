@@ -9,6 +9,8 @@ import { ShopDrawer } from "./shop-drawer";
 import { SearchDrawer } from "./search-drawer";
 import { CollectionsList } from "./collections-list";
 import { CollectionsListSkeleton } from "./collections-list";
+import { CartButton } from "./cart-button";
+import { CartDrawer } from "@/shared/components/cart";
 import { Suspense } from "react";
 
 const navigationLinks = [
@@ -17,9 +19,6 @@ const navigationLinks = [
 ];
 
 export function Navbar() {
-	// This will be dynamic later - could come from server state or context
-	const cartItemCount = 0;
-
 	return (
 		<nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 			<div className="container mx-auto px-4">
@@ -83,26 +82,8 @@ export function Navbar() {
 							</Link>
 						</Button>
 
-						{/* Cart - Server Component */}
-						<Button
-							variant="ghost"
-							size="icon"
-							asChild
-							className="relative"
-						>
-							<Link href="/cart">
-								<ShoppingCart className="h-5 w-5" />
-								{cartItemCount > 0 && (
-									<Badge
-										variant="destructive"
-										className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 text-xs"
-									>
-										{cartItemCount}
-									</Badge>
-								)}
-								<span className="sr-only">Shopping cart</span>
-							</Link>
-						</Button>
+						{/* Cart - Client Component */}
+						<CartButton />
 
 						{/* Theme Toggle - Client Component */}
 						<ModeToggle />
@@ -130,29 +111,14 @@ export function Navbar() {
 						{/* Theme Toggle - Client Component */}
 						<ModeToggle />
 
-						{/* Mobile Cart - Server Component */}
-						<Button
-							variant="ghost"
-							size="icon"
-							asChild
-							className="relative"
-						>
-							<Link href="/cart">
-								<ShoppingCart className="h-5 w-5" />
-								{cartItemCount > 0 && (
-									<Badge
-										variant="destructive"
-										className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 text-xs"
-									>
-										{cartItemCount}
-									</Badge>
-								)}
-								<span className="sr-only">Shopping cart</span>
-							</Link>
-						</Button>
+						{/* Mobile Cart - Client Component */}
+						<CartButton />
 					</div>
 				</div>
 			</div>
+
+			{/* Cart Drawer */}
+			<CartDrawer />
 		</nav>
 	);
 }
