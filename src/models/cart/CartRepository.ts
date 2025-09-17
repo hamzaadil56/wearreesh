@@ -1,8 +1,6 @@
 import { BaseRepository } from "../core/Repository";
 import { Cart, CartData } from "./Cart.model";
 import {
-	createCartWithItems,
-	createCartWithFullInput,
 	addToCart,
 	updateCart,
 	removeFromCart,
@@ -17,66 +15,8 @@ interface CartLineUpdateInput {
 
 export class CartRepository extends BaseRepository<Cart> {
 	/**
-	 * Create a new cart with initial items (simple version)
-	 */
-	async createCart(lines: CartLineInput[]): Promise<Cart | null> {
-		console.log("Creating cart with items:", lines);
-		const result = await this.safeOperation(async () => {
-			const cartData = await createCartWithItems(lines);
-			console.log("Cart data:", cartData);
-			if (!cartData) {
-				throw new Error("Failed to create cart");
-			}
-			return this.mapShopifyToCart(cartData);
-		}, "Failed to create cart");
-
-		if (result.success && result.data) {
-			this.setCached(result.data.id, result.data);
-		}
-
-		return result.success ? result.data : null;
-	}
-
-	/**
 	 * Create a cart with full input structure (matching your Postman example)
 	 */
-	async createCartWithAttributes(params: {
-		merchandiseId: string;
-		quantity: number;
-		itemAttributes?: { key: string; value: string }[];
-		cartAttributes?: { key: string; value: string }[];
-		deliveryCountryCode?: string;
-		note?: string;
-	}): Promise<Cart | null> {
-		console.log("Creating cart with full attributes:", params);
-
-		const result = await this.safeOperation(async () => {
-			const cartData = await createCartWithFullInput({
-				lineItems: [
-					{
-						merchandiseId: params.merchandiseId,
-						quantity: params.quantity,
-						attributes: params.itemAttributes || [],
-					},
-				],
-				cartAttributes: params.cartAttributes || [],
-				deliveryCountryCode: params.deliveryCountryCode || "PK", // Default to Pakistan
-				note: params.note || "",
-			});
-
-			console.log("Cart data with attributes:", cartData);
-			if (!cartData) {
-				throw new Error("Failed to create cart with attributes");
-			}
-			return this.mapShopifyToCart(cartData);
-		}, "Failed to create cart with attributes");
-
-		if (result.success && result.data) {
-			this.setCached(result.data.id, result.data);
-		}
-
-		return result.success ? result.data : null;
-	}
 
 	/**
 	 * Get cart by ID

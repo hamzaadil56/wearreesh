@@ -189,13 +189,13 @@ export type CartInputMetafieldInput = {
 };
 
 export type CartInput = {
-	attributes?: AttributeInput[];
-	lines?: CartLineInput[];
-	discountCodes?: string[];
-	giftCardCodes?: string[];
+	attributes: AttributeInput[];
+	lines: CartLineInput[];
+	discountCodes: string[];
+	giftCardCodes: string[];
 	note?: string;
-	buyerIdentity?: CartBuyerIdentityInput;
-	delivery?: CartDeliveryInput;
+	buyerIdentity: CartBuyerIdentityInput;
+	delivery: CartDeliveryInput;
 	metafields?: CartInputMetafieldInput[];
 };
 

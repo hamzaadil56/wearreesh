@@ -83,10 +83,13 @@ export async function shopifyFetch<T>({
 }): Promise<{ status: number; body: T } | never> {
 	try {
 		console.log("Endpoint:", endpoint);
-		console.log('body',JSON.stringify({
-			...(query && { query }),
-			...(variables && { variables }),
-		}))
+		console.log(
+			"body",
+			JSON.stringify({
+				...(query && { query }),
+				...(variables && { variables }),
+			})
+		);
 		const result = await fetch(endpoint, {
 			method: "POST",
 			headers: {
@@ -133,7 +136,7 @@ const removeEdgesAndNodes = (array: Connection<any>) => {
 	return array.edges.map((edge: { node: any }) => edge?.node);
 };
 
-const reshapeCart = (cart: ShopifyCart): Cart => {
+export const reshapeCart = (cart: ShopifyCart): Cart => {
 	if (!cart.cost?.totalTaxAmount) {
 		cart.cost.totalTaxAmount = {
 			amount: "0.0",
@@ -221,97 +224,6 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
 
 	return reshapedProducts;
 };
-
-export async function createCart(input: CartInput = {}): Promise<Cart> {
-	console.log("Creating cart with input:", input);
-	const res = await shopifyFetch<ShopifyCreateCartOperation>({
-		query: createCartMutation,
-		variables: {
-			input,
-		},
-		cache: "no-store",
-	});
-
-	// Check for user errors from Shopify
-	if (
-		res.body.data.cartCreate.userErrors &&
-		res.body.data.cartCreate.userErrors.length > 0
-	) {
-		const errorMessages = res.body.data.cartCreate.userErrors
-			.map((error) => error.message)
-			.join(", ");
-		throw new Error(`Cart creation failed: ${errorMessages}`);
-	}
-
-	return reshapeCart(res.body.data.cartCreate.cart);
-}
-
-// Convenience function for simple cart creation with just line items
-export async function createCartWithItems(
-	lineItems: CartLineInput[]
-): Promise<Cart> {
-	return createCart({ lines: lineItems });
-}
-
-// Helper function to create a cart with the exact structure from your example
-export async function createCartWithFullInput(params: {
-	lineItems: {
-		merchandiseId: string;
-		quantity: number;
-		attributes?: { key: string; value: string }[];
-	}[];
-	cartAttributes?: { key: string; value: string }[];
-	discountCodes?: string[];
-	giftCardCodes?: string[];
-	note?: string;
-	buyerIdentity?: {
-		email?: string;
-		phone?: string;
-		countryCode?: string;
-		customerAccessToken?: string;
-		preferences?: Record<string, any>;
-	};
-	deliveryCountryCode?: string;
-}): Promise<Cart> {
-	const cartInput: CartInput = {
-		// Cart-level attributes
-		attributes: params.cartAttributes || [],
-
-		// Line items with proper structure
-		lines: params.lineItems.map((item) => ({
-			merchandiseId: item.merchandiseId,
-			quantity: item.quantity,
-			attributes: item.attributes || [],
-		})),
-
-		// Discount and gift cards (empty arrays if not provided)
-		discountCodes: params.discountCodes || [],
-		giftCardCodes: params.giftCardCodes || [],
-
-		// Note (empty string if not provided)
-		note: params.note || "",
-
-		// Buyer identity (empty object if not provided)
-		buyerIdentity: params.buyerIdentity || {},
-
-		// Delivery with country code structure
-		delivery: {
-			addresses: params.deliveryCountryCode
-				? [
-						{
-							address: {
-								deliveryAddress: {
-									countryCode: params.deliveryCountryCode,
-								},
-							},
-						},
-				  ]
-				: [],
-		},
-	};
-
-	return createCart(cartInput);
-}
 
 export async function addToCart(
 	cartId: string,

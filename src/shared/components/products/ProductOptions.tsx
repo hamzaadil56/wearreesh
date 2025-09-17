@@ -17,7 +17,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 		selectedVariant,
 	} = useProductViewModel(viewModel);
 
-	const { addToCart, isLoading: cartLoading } = useCart();
+	const { createCartClient, isLoading: cartLoading } = useCart();
 
 	if (!product) return null;
 
@@ -89,7 +89,10 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 				<Button
 					onClick={async () => {
 						if (selectedVariant) {
-							await addToCart(selectedVariant.id, quantity);
+							await createCartClient(
+								selectedVariant.id,
+								quantity
+							);
 						}
 					}}
 					disabled={

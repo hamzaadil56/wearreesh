@@ -19,7 +19,7 @@ export const createCartMutation = /* GraphQL */ `
 	mutation createCart($input: CartInput) {
 		cartCreate(input: $input) {
 			cart {
-				checkoutUrl
+				...cart
 			}
 			userErrors {
 				field
@@ -27,6 +27,9 @@ export const createCartMutation = /* GraphQL */ `
 			}
 		}
 	}
+	${cartFragment}
+	${imageFragment}
+	${seoFragment}
 `;
 
 export const editCartItemsMutation = /* GraphQL */ `
