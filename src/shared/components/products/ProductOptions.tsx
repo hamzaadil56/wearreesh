@@ -17,7 +17,47 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 		selectedVariant,
 	} = useProductViewModel(viewModel);
 
-	const { createCartClient, isLoading: cartLoading } = useCart();
+	const { addToCart, isLoading: cartLoading } = useCart();
+
+	const handleAddToCart = async () => {
+		if (selectedVariant) {
+			const addToCartPayload = {
+				lines: [
+					{
+						merchandiseId: selectedVariant.id,
+						quantity: quantity,
+						attributes: [
+							{
+								key: "product_type",
+								value: "clothing",
+							},
+						],
+					},
+				],
+				attributes: [
+					{
+						key: "product_type",
+						value: "clothing",
+					},
+				],
+				discountCodes: [],
+				giftCardCodes: [],
+				buyerIdentity: {},
+				delivery: {
+					addresses: [
+						{
+							address: {
+								deliveryAddress: {
+									countryCode: "PK",
+								},
+							},
+						},
+					],
+				},
+			};
+			await addToCart(addToCartPayload);
+		}
+	};
 
 	if (!product) return null;
 
@@ -87,14 +127,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 				{/* Add to Cart Button */}
 				<Button
-					onClick={async () => {
-						if (selectedVariant) {
-							await createCartClient(
-								selectedVariant.id,
-								quantity
-							);
-						}
-					}}
+					onClick={handleAddToCart}
 					disabled={
 						!selectedVariant ||
 						!selectedVariant.availableForSale ||

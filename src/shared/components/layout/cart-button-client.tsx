@@ -1,10 +1,11 @@
+"use client";
+
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { CartRepository } from "@/models/cart";
-import { cookies } from "next/headers";
+import { useCart } from "@/shared/components/cart";
 
-interface CartButtonProps {
+interface CartButtonClientProps {
 	className?: string;
 	variant?:
 		| "default"
@@ -16,21 +17,22 @@ interface CartButtonProps {
 	size?: "default" | "sm" | "lg" | "icon";
 }
 
-export async function CartButton({
+export function CartButtonClient({
 	className = "relative",
 	variant = "ghost",
 	size = "icon",
-}: CartButtonProps) {
-	const repository = new CartRepository();
-	const cartId = (await cookies()).get("cartId")?.value;
-	console.log("cartId", cartId);
-	const cart = await repository.findById(cartId || "");
-	const totalQuantity = cart?.totalQuantity;
+}: CartButtonClientProps) {
+	const { totalQuantity, toggleCart } = useCart();
 
 	return (
-		<Button variant={variant} size={size} className={className}>
+		<Button
+			variant={variant}
+			size={size}
+			className={className}
+			onClick={toggleCart}
+		>
 			<ShoppingCart className="h-5 w-5" />
-			{totalQuantity! > 0 && (
+			{totalQuantity > 0 && (
 				<Badge
 					variant="destructive"
 					className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 text-xs"

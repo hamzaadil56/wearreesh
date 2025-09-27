@@ -9,7 +9,7 @@ import { ShopDrawer } from "./shop-drawer";
 import { SearchDrawer } from "./search-drawer";
 import { CollectionsList } from "./collections-list";
 import { CollectionsListSkeleton } from "./collections-list";
-import { CartButton } from "./cart-button";
+import { CartButtonClient } from "./cart-button-client";
 import { CartDrawer } from "@/shared/components/cart";
 import { Suspense } from "react";
 
@@ -83,7 +83,7 @@ export function Navbar() {
 						</Button>
 
 						{/* Cart - Client Component */}
-						<CartButton />
+						<CartButtonClient />
 
 						{/* Theme Toggle - Client Component */}
 						<ModeToggle />
@@ -112,7 +112,7 @@ export function Navbar() {
 						<ModeToggle />
 
 						{/* Mobile Cart - Client Component */}
-						<CartButton />
+						<CartButtonClient />
 					</div>
 				</div>
 			</div>

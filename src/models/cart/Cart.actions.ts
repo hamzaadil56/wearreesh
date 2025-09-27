@@ -11,25 +11,29 @@ import {
 	CartLineInput,
 	ShopifyAddToCartOperation,
 	ShopifyCreateCartOperation,
+	ShopifyCartOperation,
 } from "@/shared/lib/shopify/types";
+import { getCartQuery } from "@/shared/lib/shopify/queries/cart";
+import { cookies } from "next/headers";
+import { revalidateTag } from "next/cache";
+import { TAGS } from "@/shared/lib/shopify/constants";
 
-export async function addToCart(
-	cartId: string,
-	lines: CartLineInput[]
-): Promise<Cart> {
+export async function addItem(lines: CartLineInput[]): Promise<Cart> {
+	const cookieStore = await cookies();
+	const cartId = cookieStore.get("cartId")?.value;
 	const res = await shopifyFetch<ShopifyAddToCartOperation>({
 		query: addToCartMutation,
 		variables: {
-			cartId,
+			cartId: cartId || "",
 			lines,
 		},
 		cache: "no-store",
 	});
+	revalidateTag(TAGS.cart);
 	return reshapeCart(res.body.data.cartLinesAdd.cart);
 }
 
 export async function createCart(input: CartInput): Promise<Cart> {
-	console.log("input", input);
 	const res = await shopifyFetch<ShopifyCreateCartOperation>({
 		query: createCartMutation,
 		variables: {
@@ -47,6 +51,31 @@ export async function createCart(input: CartInput): Promise<Cart> {
 			.join(", ");
 		throw new Error(`Cart creation failed: ${errorMessages}`);
 	}
-
+	const cookieStore = await cookies();
+	cookieStore.set("cartId", res.body.data.cartCreate.cart.id);
 	return reshapeCart(res.body.data.cartCreate.cart);
+}
+
+export async function addToCart(cartInput: CartInput): Promise<Cart> {
+	const cookieStore = await cookies();
+	const cartId = cookieStore.get("cartId")?.value;
+
+	if (cartId) {
+		// Cart exists, add items to existing cart
+		// Extract lines from CartInput to pass to addItem
+		return await addItem(cartInput.lines);
+	} else {
+		// No cart exists, create new cart with the full CartInput
+		return await createCart(cartInput);
+	}
+}
+
+export async function getCart(cartId: string): Promise<Cart> {
+	const res = await shopifyFetch<ShopifyCartOperation>({
+		query: getCartQuery,
+		variables: {
+			cartId,
+		},
+	});
+	return reshapeCart(res.body.data.cart);
 }

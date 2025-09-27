@@ -18,7 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export function CartDrawer() {
-	const { viewModel, updateCartItem, removeCartItem, clearCart } = useCart();
+	const cart = useCart();
 	const {
 		isOpen,
 		items,
@@ -28,21 +28,25 @@ export function CartDrawer() {
 		total,
 		checkoutUrl,
 		isEmpty,
-	} = viewModel.viewState;
+		updateItemQuantity,
+		removeItem,
+		clearCart,
+		closeCart,
+	} = cart;
 
 	const handleUpdateQuantity = async (
 		lineId: string,
 		newQuantity: number
 	) => {
 		if (newQuantity <= 0) {
-			await removeCartItem(lineId);
+			await removeItem(lineId);
 		} else {
-			await updateCartItem(lineId, newQuantity);
+			await updateItemQuantity(lineId, newQuantity);
 		}
 	};
 
 	const handleRemoveItem = async (lineId: string) => {
-		await removeCartItem(lineId);
+		await removeItem(lineId);
 	};
 
 	const handleClearCart = async () => {
@@ -50,23 +54,30 @@ export function CartDrawer() {
 	};
 
 	return (
-		<Drawer open={isOpen} onOpenChange={() => {}} direction="right">
-			<DrawerContent className="w-full max-w-md">
-				<DrawerHeader className="border-b">
+		<Drawer
+			open={isOpen}
+			onOpenChange={(open) => {
+				if (!open) {
+					closeCart();
+				}
+			}}
+			direction="right"
+		>
+			<DrawerContent className="!w-full sm:!max-w-md h-full flex flex-col">
+				<DrawerHeader className="border-b flex-shrink-0">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
 							<ShoppingBag className="h-5 w-5" />
 							<DrawerTitle>Shopping Cart</DrawerTitle>
 						</div>
-						<DrawerClose asChild>
-							<Button
-								variant="ghost"
-								size="icon"
-								className="h-8 w-8"
-							>
-								<X className="h-4 w-4" />
-							</Button>
-						</DrawerClose>
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-8 w-8"
+							onClick={closeCart}
+						>
+							<X className="h-4 w-4" />
+						</Button>
 					</div>
 					<DrawerDescription>
 						{totalQuantity > 0
@@ -77,7 +88,7 @@ export function CartDrawer() {
 					</DrawerDescription>
 				</DrawerHeader>
 
-				<div className="flex-1 flex flex-col">
+				<div className="flex-1 flex flex-col min-h-0">
 					{isEmpty ? (
 						<div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
 							<ShoppingBag className="h-16 w-16 text-muted-foreground mb-4" />
@@ -87,17 +98,15 @@ export function CartDrawer() {
 							<p className="text-muted-foreground mb-6">
 								Add some items to get started
 							</p>
-							<DrawerClose asChild>
-								<Button asChild>
-									<Link href="/shop">Continue Shopping</Link>
-								</Button>
-							</DrawerClose>
+							<Button asChild onClick={closeCart}>
+								<Link href="/shop">Continue Shopping</Link>
+							</Button>
 						</div>
 					) : (
 						<>
 							{/* Cart Items */}
-							<ScrollArea className="flex-1 p-4">
-								<div className="space-y-4">
+							<ScrollArea className="flex-1 min-h-0">
+								<div className="space-y-4 p-4">
 									{items.map((item) => (
 										<div
 											key={item.id}
@@ -202,7 +211,7 @@ export function CartDrawer() {
 							</ScrollArea>
 
 							{/* Cart Summary */}
-							<div className="border-t p-4 space-y-4">
+							<div className="border-t p-4 space-y-4 flex-shrink-0">
 								{/* Subtotal */}
 								<div className="flex justify-between items-center">
 									<span className="text-sm text-muted-foreground">
@@ -269,17 +278,16 @@ export function CartDrawer() {
 
 								{/* Continue Shopping */}
 								<div className="text-center">
-									<DrawerClose asChild>
-										<Button
-											variant="ghost"
-											size="sm"
-											asChild
-										>
-											<Link href="/shop">
-												Continue Shopping
-											</Link>
-										</Button>
-									</DrawerClose>
+									<Button
+										variant="ghost"
+										size="sm"
+										asChild
+										onClick={closeCart}
+									>
+										<Link href="/shop">
+											Continue Shopping
+										</Link>
+									</Button>
 								</div>
 							</div>
 						</>

@@ -21,21 +21,15 @@ export class CartRepository extends BaseRepository<Cart> {
 	/**
 	 * Get cart by ID
 	 */
-	async findById(id: string): Promise<Cart | null> {
+	async findById(cartId: string): Promise<Cart | null> {
 		// Check cache first
-		const cached = this.getCached(id);
-		if (cached) return cached;
 
 		const result = await this.safeOperation(async () => {
-			const cartData = await getCart(id);
+			const cartData = await getCart(cartId);
 			if (!cartData) return null;
 
 			return this.mapShopifyToCart(cartData);
-		}, `Failed to fetch cart with id: ${id}`);
-
-		if (result.success && result.data) {
-			this.setCached(id, result.data);
-		}
+		}, `Failed to fetch cart`);
 
 		return result.success ? result.data : null;
 	}

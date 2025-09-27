@@ -82,14 +82,6 @@ export async function shopifyFetch<T>({
 	variables?: ExtractVariables<T>;
 }): Promise<{ status: number; body: T } | never> {
 	try {
-		console.log("Endpoint:", endpoint);
-		console.log(
-			"body",
-			JSON.stringify({
-				...(query && { query }),
-				...(variables && { variables }),
-			})
-		);
 		const result = await fetch(endpoint, {
 			method: "POST",
 			headers: {
@@ -106,7 +98,6 @@ export async function shopifyFetch<T>({
 		});
 
 		const body = await result.json();
-		console.log("Body:", body);
 		if (body.errors) {
 			throw body.errors[0];
 		}
@@ -273,12 +264,17 @@ export async function updateCart(
 }
 
 export async function getCart(cartId: string): Promise<Cart | undefined> {
+	if (!cartId) {
+		return undefined;
+	}
 	const res = await shopifyFetch<ShopifyCartOperation>({
+		cache: "no-store",
 		query: getCartQuery,
 		variables: { cartId },
 		tags: [TAGS.cart],
 	});
 
+	console.log("res", res.body.data.cart);
 	// Old carts becomes `null` when you checkout.
 	if (!res.body.data.cart) {
 		return undefined;
