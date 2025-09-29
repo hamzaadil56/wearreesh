@@ -3,6 +3,7 @@
 import {
 	addToCartMutation,
 	createCartMutation,
+	removeFromCartMutation,
 } from "@/shared/lib/shopify/mutations/cart";
 import { shopifyFetch, reshapeCart } from "@/shared/lib/shopify";
 import {
@@ -12,6 +13,7 @@ import {
 	ShopifyAddToCartOperation,
 	ShopifyCreateCartOperation,
 	ShopifyCartOperation,
+	ShopifyRemoveFromCartOperation,
 } from "@/shared/lib/shopify/types";
 import { getCartQuery } from "@/shared/lib/shopify/queries/cart";
 import { cookies } from "next/headers";
@@ -70,12 +72,16 @@ export async function addToCart(cartInput: CartInput): Promise<Cart> {
 	}
 }
 
-export async function getCart(cartId: string): Promise<Cart> {
-	const res = await shopifyFetch<ShopifyCartOperation>({
-		query: getCartQuery,
+export async function removeFromCart(
+	cartId: string,
+	lineIds: string[]
+): Promise<Cart> {
+	const res = await shopifyFetch<ShopifyRemoveFromCartOperation>({
+		query: removeFromCartMutation,
 		variables: {
 			cartId,
+			lineIds,
 		},
 	});
-	return reshapeCart(res.body.data.cart);
+	return reshapeCart(res.body.data.cartLinesRemove.cart);
 }

@@ -118,6 +118,7 @@ export type ShopifyProduct = {
 	description: string;
 	descriptionHtml: string;
 	options: ProductOption[];
+	totalInventory: number;
 	priceRange: {
 		maxVariantPrice: Money;
 		minVariantPrice: Money;

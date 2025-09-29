@@ -178,6 +178,7 @@ export class ProductRepository extends BaseRepository<Product> {
 			description: shopifyProduct.description,
 			descriptionHtml: shopifyProduct.descriptionHtml,
 			handle: shopifyProduct.handle,
+			totalInventory: shopifyProduct.totalInventory,
 			images: shopifyProduct.images || [],
 			variants: shopifyProduct.variants || [],
 			priceRange: shopifyProduct.priceRange,

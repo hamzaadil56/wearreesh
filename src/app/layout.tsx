@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { CartProvider } from "@/shared/components/cart";
-import { getCart } from "@/models/cart/Cart.actions";
 import { Cart, CartRepository } from "@/models/cart";
 import { cookies } from "next/headers";
 import { Navbar } from "@/shared/components/layout";

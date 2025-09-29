@@ -37,6 +37,7 @@ export interface ProductData {
 	description: string;
 	descriptionHtml?: string;
 	handle: string;
+	totalInventory: number;
 	images: ProductImage[];
 	variants: ProductVariant[];
 	priceRange: {
@@ -63,6 +64,7 @@ export class Product extends BaseModel {
 	public readonly description: string;
 	public readonly descriptionHtml?: string;
 	public readonly handle: string;
+	public readonly totalInventory: number;
 	public readonly images: ProductImage[];
 	public readonly variants: ProductVariant[];
 	public readonly priceRange: ProductData["priceRange"];
@@ -83,6 +85,7 @@ export class Product extends BaseModel {
 		this.description = data.description;
 		this.descriptionHtml = data.descriptionHtml;
 		this.handle = data.handle;
+		this.totalInventory = data.totalInventory;
 		this.images = data.images;
 		this.variants = data.variants;
 		this.priceRange = data.priceRange;
@@ -211,6 +214,7 @@ export class Product extends BaseModel {
 			description: this.description,
 			descriptionHtml: this.descriptionHtml,
 			handle: this.handle,
+			totalInventory: this.totalInventory,
 			images: this.images,
 			variants: this.variants,
 			priceRange: this.priceRange,

@@ -51,6 +51,10 @@ export const removeFromCartMutation = /* GraphQL */ `
 			cart {
 				...cart
 			}
+			userErrors {
+				field
+				message
+			}
 		}
 	}
 	${cartFragment}

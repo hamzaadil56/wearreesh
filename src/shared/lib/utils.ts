@@ -14,6 +14,7 @@ export const mapToViewModel = (product: Product): ProductViewModel => {
 		id: product.id,
 		title: product.title,
 		description: product.description,
+		totalInventory: product.totalInventory,
 		images: product.images,
 		variants: product.variants,
 		primaryImage: primaryImage || product.images?.[0],

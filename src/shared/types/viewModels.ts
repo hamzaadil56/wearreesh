@@ -5,8 +5,9 @@ export interface ProductViewModel {
 	id: string;
 	title: string;
 	description: string;
+	totalInventory: number;
 	options: ProductOption[];
-    variants: ProductVariant[];
+	variants: ProductVariant[];
 	primaryImage: ProductImage;
 	handle: string;
 	images: ProductImage[];

@@ -5,6 +5,7 @@ import { Cart, CartItem } from "@/models/cart/Cart.model";
 import {
 	createCart,
 	addToCart as addToCartAction,
+	removeFromCart as removeFromCartAction,
 } from "@/models/cart/Cart.actions";
 import { Cart as ShopifyCart, CartInput } from "@/shared/lib/shopify/types";
 
@@ -163,12 +164,26 @@ export function useCartViewModel(): UseCartViewModelReturn {
 	const removeItem = useCallback(
 		async (lineId: string): Promise<void> => {
 			const result = await executeOperation(async () => {
-				// This would typically call a cart service/repository
-				await new Promise((resolve) => setTimeout(resolve, 500));
-				return true;
+				if (!viewState.cart?.id) {
+					throw new Error("No cart found");
+				}
+
+				const shopifyCart = await removeFromCartAction(
+					viewState.cart.id,
+					[lineId]
+				);
+				const updatedCart = convertShopifyCartToModel(shopifyCart);
+
+				// Update the cart state with the response
+				setViewState((prev) => {
+					const newState = { ...prev, cart: updatedCart };
+					return updateViewStateFromCart(newState, updatedCart);
+				});
+
+				return updatedCart;
 			}, "Failed to remove item from cart");
 		},
-		[executeOperation]
+		[executeOperation, viewState.cart?.id]
 	);
 
 	// Update item quantity
@@ -190,18 +205,34 @@ export function useCartViewModel(): UseCartViewModelReturn {
 	// Clear entire cart
 	const clearCart = useCallback(async (): Promise<void> => {
 		const result = await executeOperation(async () => {
-			// This would typically call a cart service/repository
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			return true;
-		}, "Failed to clear cart");
+			if (!viewState.cart?.id) {
+				throw new Error("No cart found");
+			}
 
-		if (result.success) {
+			// Get all line IDs from current cart items
+			const lineIds = viewState.cart.lines.map((line) => line.id);
+
+			if (lineIds.length === 0) {
+				// Cart is already empty
+				return viewState.cart;
+			}
+
+			// Remove all items using removeFromCart action
+			const shopifyCart = await removeFromCartAction(
+				viewState.cart.id,
+				lineIds
+			);
+			const updatedCart = convertShopifyCartToModel(shopifyCart);
+
+			// Update the cart state with the response
 			setViewState((prev) => {
-				const newState = { ...prev, cart: null };
-				return updateViewStateFromCart(newState, null);
+				const newState = { ...prev, cart: updatedCart };
+				return updateViewStateFromCart(newState, updatedCart);
 			});
-		}
-	}, [executeOperation]);
+
+			return updatedCart;
+		}, "Failed to clear cart");
+	}, [executeOperation, viewState.cart]);
 
 	// Open cart drawer
 	const openCart = useCallback((): void => {

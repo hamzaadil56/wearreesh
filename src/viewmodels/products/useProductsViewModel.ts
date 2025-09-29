@@ -80,6 +80,7 @@ export function useProductsViewModel(
 			id: product.id,
 			title: product.title,
 			description: product.description,
+			totalInventory: product.totalInventory,
 			variants: product.variants,
 			images: product.images,
 			primaryImage: primaryImage || product.images?.[0],

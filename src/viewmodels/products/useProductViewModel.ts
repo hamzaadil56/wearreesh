@@ -34,6 +34,7 @@ export interface UseProductViewModelReturn {
 	incrementQuantity: () => void;
 	decrementQuantity: () => void;
 	addToCart: () => Promise<void>;
+	updateInventoryAfterCartAdd: (quantityAdded: number) => void;
 	clearError: () => void;
 }
 
@@ -60,6 +61,7 @@ export function useProductViewModel(
 			id: product.id,
 			title: product.title,
 			description: product.description,
+			totalInventory: product.totalInventory,
 			variants: product.variants,
 			primaryImage: primaryImage || product.images?.[0],
 			images: product.images,
@@ -166,10 +168,16 @@ export function useProductViewModel(
 	const updateQuantity = useCallback((quantity: number) => {
 		if (quantity < 1) return;
 
-		setViewState((prev) => ({
-			...prev,
-			quantity: Math.min(quantity, 10), // Max quantity of 10
-		}));
+		setViewState((prev) => {
+			const maxQuantity = prev.product?.totalInventory
+				? Math.min(10, prev.product.totalInventory)
+				: 10;
+
+			return {
+				...prev,
+				quantity: Math.min(quantity, maxQuantity),
+			};
+		});
 	}, []);
 
 	// Increment quantity
@@ -180,7 +188,7 @@ export function useProductViewModel(
 	// Decrement quantity
 	const decrementQuantity = useCallback(() => {
 		updateQuantity(viewState.quantity - 1);
-	}, [updateQuantity]);
+	}, [viewState.quantity, updateQuantity]);
 
 	// Add to cart
 	const addToCart = useCallback(async () => {
@@ -207,6 +215,27 @@ export function useProductViewModel(
 			}));
 		}
 	}, [viewState.product, viewState.selectedVariant]);
+
+	// Update inventory after successful cart addition
+	const updateInventoryAfterCartAdd = useCallback((quantityAdded: number) => {
+		setViewState((prev) => {
+			if (!prev.product) return prev;
+
+			const updatedProduct = {
+				...prev.product,
+				totalInventory: Math.max(
+					0,
+					prev.product.totalInventory - quantityAdded
+				),
+			};
+
+			return {
+				...prev,
+				product: updatedProduct,
+				quantity: 1, // Reset quantity to 1 after adding to cart
+			};
+		});
+	}, []);
 
 	// Clear error
 	const clearError = useCallback(() => {
@@ -289,6 +318,7 @@ export function useProductViewModel(
 		incrementQuantity,
 		decrementQuantity,
 		addToCart,
+		updateInventoryAfterCartAdd,
 		clearError,
 	};
 }
