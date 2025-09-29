@@ -1,29 +1,11 @@
 import { BaseModel } from "../core/BaseModel";
-import type { ProductOption } from "@/shared/lib/shopify/types";
+import type { ProductOption, ProductVariant } from "@/shared/lib/shopify/types";
 
 export interface ProductImage {
 	url: string;
 	altText: string;
 	width?: number;
 	height?: number;
-}
-
-export interface ProductVariant {
-	id: string;
-	title: string;
-	price: {
-		amount: string;
-		currencyCode: string;
-	};
-	compareAtPrice?: {
-		amount: string;
-		currencyCode: string;
-	};
-	availableForSale: boolean;
-	selectedOptions: {
-		name: string;
-		value: string;
-	}[];
 }
 
 export interface ProductSEO {

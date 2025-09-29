@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { Product, ProductVariant } from "@/models/product/Product.model";
+import { Product } from "@/models/product/Product.model";
 import { ProductRepository } from "@/models/product/ProductRepository";
-import { ProductData } from "@/models/product/Product.model";
 import { ProductViewModel } from "@/shared/types/viewModels";
+import { ProductVariant } from "@/shared/lib/shopify/types";
 
 export interface ProductViewState {
 	product: ProductViewModel | null;

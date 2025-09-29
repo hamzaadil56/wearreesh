@@ -23,21 +23,7 @@ export const productFragment = /* GraphQL */ `
 		variants(first: 250) {
 			edges {
 				node {
-					id
-					title
-					availableForSale
-					selectedOptions {
-						name
-						value
-					}
-					price {
-						amount
-						currencyCode
-					}
-					compareAtPrice {
-						amount
-						currencyCode
-					}
+					...variant
 				}
 			}
 		}

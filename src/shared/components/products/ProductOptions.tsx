@@ -20,24 +20,29 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 	const { addToCart, isLoading: cartLoading, items: cartItems } = useCart();
 
-	console.log("cartItems", cartItems);
-
 	// State for button animation and text
 	const [showSelectVariant, setShowSelectVariant] = useState(false);
 	const [isShaking, setIsShaking] = useState(false);
 
-	// Calculate available inventory based on current cart contents
+	// Calculate available inventory by subtracting cart quantity from variant's quantityAvailable
 	const getAvailableInventory = useCallback(() => {
-		if (!product || !selectedVariant) return product?.totalInventory || 0;
+		if (!selectedVariant) {
+			return product?.totalInventory ?? 0;
+		}
 
-		// Find items in cart that match this product variant
+		// Get quantity already in cart for this specific variant
 		const cartQuantityForVariant = cartItems
 			.filter((item) => item.merchandiseId === selectedVariant.id)
 			.reduce((total, item) => total + item.quantity, 0);
 
-		// Return remaining inventory
-		return Math.max(0, product.totalInventory - cartQuantityForVariant);
-	}, [product, selectedVariant, cartItems]);
+		// Calculate remaining available inventory for this variant
+		const remainingInventory = Math.max(
+			0,
+			selectedVariant.quantityAvailable - cartQuantityForVariant
+		);
+
+		return remainingInventory;
+	}, [selectedVariant, cartItems, product?.totalInventory]);
 
 	const availableInventory = getAvailableInventory();
 
@@ -210,7 +215,8 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 						availableInventory === 0 ||
 						(selectedVariant
 							? !selectedVariant.availableForSale
-							: false)
+							: false) ||
+						quantity > availableInventory
 					}
 					className={`w-full h-12 text-base transition-all duration-300 ${
 						isShaking ? "animate-shake" : ""

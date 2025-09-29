@@ -1,4 +1,5 @@
 import { productFragment } from "../fragments/product";
+import { variantFragment } from "../fragments/variant";
 import { optionFragment } from "../fragments/option";
 import { imageFragment } from "../fragments/image";
 import { seoFragment } from "../fragments/seo";
@@ -10,6 +11,7 @@ export const getProductQuery = /* GraphQL */ `
 		}
 	}
 	${productFragment}
+	${variantFragment}
 	${optionFragment}
 	${imageFragment}
 	${seoFragment}
@@ -35,6 +37,7 @@ export const getProductsQuery = /* GraphQL */ `
 		}
 	}
 	${productFragment}
+	${variantFragment}
 	${optionFragment}
 	${imageFragment}
 	${seoFragment}
@@ -77,6 +80,7 @@ export const getProductRecommendationsQuery = /* GraphQL */ `
 		}
 	}
 	${productFragment}
+	${variantFragment}
 	${optionFragment}
 	${imageFragment}
 	${seoFragment}

@@ -73,16 +73,21 @@ export type ProductOption = {
 	values: string[];
 };
 
-export type ProductVariant = {
+export interface ProductVariant {
 	id: string;
 	title: string;
+	quantityAvailable: number;
+	price: Money;
+	compareAtPrice?: {
+		amount: string;
+		currencyCode: string;
+	};
 	availableForSale: boolean;
 	selectedOptions: {
 		name: string;
 		value: string;
 	}[];
-	price: Money;
-};
+}
 
 export type SEO = {
 	title: string;
