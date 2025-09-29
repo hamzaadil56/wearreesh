@@ -1,11 +1,8 @@
 import { Suspense } from "react";
 import { ProductRepository } from "@/models/product/ProductRepository";
-import ProductsViewClient from "@/views/products/ProductsViewClient";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { mapToViewModel } from "@/shared/lib/utils";
-import { ProductCard } from "@/shared/components/cards/ProductCard";
 import ProductsView from "@/views/products/ProductsView";
-import { SortDropdown } from "@/shared/components/layout/products/sort-dropdown";
 
 export default async function ProductsPage(props: {
 	searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -32,20 +29,9 @@ export default async function ProductsPage(props: {
 		const initialProducts = initialData.items.map(mapToViewModel);
 
 		return (
-			<div className="space-y-6">
-				{/* Header with Item Count and Sort */}
-				<div className="flex items-center justify-between">
-					<p className="text-sm text-gray-600">
-						{initialProducts.length} Items
-					</p>
-					<SortDropdown />
-				</div>
-
-				{/* Products Grid */}
-				<Suspense fallback={<ProductsLoadingView />}>
-					<ProductsView products={initialProducts} />
-				</Suspense>
-			</div>
+			<Suspense fallback={<ProductsLoadingView />}>
+				<ProductsView products={initialProducts} />
+			</Suspense>
 		);
 	} catch (error) {
 		console.error("Error in ProductsPage:", error);
@@ -56,17 +42,17 @@ export default async function ProductsPage(props: {
 
 function ProductsLoadingView() {
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-			{Array.from({ length: 6 }).map((_, i) => (
+		<div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+			{Array.from({ length: 8 }).map((_, i) => (
 				<div
 					key={i}
 					className="bg-card rounded-lg shadow-sm border overflow-hidden"
 				>
 					<Skeleton className="aspect-square w-full" />
-					<div className="p-4 space-y-3">
-						<Skeleton className="h-6 w-full" />
-						<Skeleton className="h-4 w-3/4" />
-						<Skeleton className="h-6 w-24" />
+					<div className="p-2 sm:p-4 space-y-2 sm:space-y-3">
+						<Skeleton className="h-4 sm:h-6 w-full" />
+						<Skeleton className="h-3 sm:h-4 w-3/4" />
+						<Skeleton className="h-4 sm:h-6 w-16 sm:w-24" />
 					</div>
 				</div>
 			))}

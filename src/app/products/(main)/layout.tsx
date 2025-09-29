@@ -1,7 +1,7 @@
 import { ReactNode, Suspense } from "react";
 import { ProductRepository } from "@/models/product/ProductRepository";
 import ProductLayoutWrapper from "./ProductLayoutWrapper";
-import { ProductsFilter } from "@/shared/components/layout";
+import { ProductsLayoutClient } from "@/shared/components/layout/products/ProductsLayoutClient";
 
 interface ProductsLayoutProps {
 	children: ReactNode;
@@ -25,30 +25,16 @@ export default async function ProductsLayout({
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto px-4 py-6">
-			<div className="flex gap-6">
-				{/* Left Sidebar - Filter Section */}
-				<div className="w-64 flex-shrink-0">
-					<Suspense
-						fallback={
-							<div className="w-64 h-96 bg-gray-100 animate-pulse rounded-lg" />
-						}
-					>
-						<ProductsFilter optionsData={optionsData} />
-					</Suspense>
+		<Suspense
+			fallback={
+				<div className="max-w-7xl mx-auto px-4 py-6">
+					<div className="h-96 bg-gray-100 animate-pulse rounded-lg" />
 				</div>
-
-				{/* Main Content Area */}
-				<div className="flex-1">
-					<Suspense
-						fallback={
-							<div className="h-96 bg-gray-100 animate-pulse rounded-lg" />
-						}
-					>
-						<ProductLayoutWrapper>{children}</ProductLayoutWrapper>
-					</Suspense>
-				</div>
-			</div>
-		</div>
+			}
+		>
+			<ProductsLayoutClient optionsData={optionsData}>
+				<ProductLayoutWrapper>{children}</ProductLayoutWrapper>
+			</ProductsLayoutClient>
+		</Suspense>
 	);
 }
