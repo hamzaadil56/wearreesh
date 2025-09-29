@@ -34,7 +34,6 @@ export interface UseProductViewModelReturn {
 	incrementQuantity: () => void;
 	decrementQuantity: () => void;
 	addToCart: () => Promise<void>;
-	updateInventoryAfterCartAdd: (quantityAdded: number) => void;
 	clearError: () => void;
 }
 
@@ -216,27 +215,6 @@ export function useProductViewModel(
 		}
 	}, [viewState.product, viewState.selectedVariant]);
 
-	// Update inventory after successful cart addition
-	const updateInventoryAfterCartAdd = useCallback((quantityAdded: number) => {
-		setViewState((prev) => {
-			if (!prev.product) return prev;
-
-			const updatedProduct = {
-				...prev.product,
-				totalInventory: Math.max(
-					0,
-					prev.product.totalInventory - quantityAdded
-				),
-			};
-
-			return {
-				...prev,
-				product: updatedProduct,
-				quantity: 1, // Reset quantity to 1 after adding to cart
-			};
-		});
-	}, []);
-
 	// Clear error
 	const clearError = useCallback(() => {
 		setViewState((prev) => ({ ...prev, error: null }));
@@ -318,7 +296,6 @@ export function useProductViewModel(
 		incrementQuantity,
 		decrementQuantity,
 		addToCart,
-		updateInventoryAfterCartAdd,
 		clearError,
 	};
 }

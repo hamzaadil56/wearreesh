@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/shared/components/ui/button";
 import type { ProductOptionsProps } from "@/shared/types/props";
 import { useProductViewModel } from "@/viewmodels/products/useProductViewModel";
@@ -16,14 +16,43 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 		decrementQuantity,
 		incrementQuantity,
 		selectedVariant,
-		updateInventoryAfterCartAdd,
 	} = useProductViewModel(viewModel);
 
-	const { addToCart, isLoading: cartLoading } = useCart();
+	const { addToCart, isLoading: cartLoading, items: cartItems } = useCart();
+
+	console.log("cartItems", cartItems);
 
 	// State for button animation and text
 	const [showSelectVariant, setShowSelectVariant] = useState(false);
 	const [isShaking, setIsShaking] = useState(false);
+
+	// Calculate available inventory based on current cart contents
+	const getAvailableInventory = useCallback(() => {
+		if (!product || !selectedVariant) return product?.totalInventory || 0;
+
+		// Find items in cart that match this product variant
+		const cartQuantityForVariant = cartItems
+			.filter((item) => item.merchandiseId === selectedVariant.id)
+			.reduce((total, item) => total + item.quantity, 0);
+
+		// Return remaining inventory
+		return Math.max(0, product.totalInventory - cartQuantityForVariant);
+	}, [product, selectedVariant, cartItems]);
+
+	const availableInventory = getAvailableInventory();
+
+	// Custom quantity functions that respect available inventory
+	const handleIncrementQuantity = useCallback(() => {
+		if (quantity < Math.min(10, availableInventory)) {
+			incrementQuantity();
+		}
+	}, [quantity, availableInventory, incrementQuantity]);
+
+	const handleDecrementQuantity = useCallback(() => {
+		if (quantity > 1) {
+			decrementQuantity();
+		}
+	}, [quantity, decrementQuantity]);
 
 	// Reset the "select variant" message when a variant is selected
 	useEffect(() => {
@@ -53,10 +82,8 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 		if (selectedVariant && product) {
 			// Check if requested quantity exceeds available inventory
-			if (quantity > product.totalInventory) {
-				alert(
-					`Only ${product.totalInventory} items available in stock`
-				);
+			if (quantity > availableInventory) {
+				alert(`Only ${availableInventory} items available in stock`);
 				return;
 			}
 
@@ -95,11 +122,8 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 				},
 			};
 
-			// Add to cart and update inventory on success
+			// Add to cart - inventory will be automatically calculated from cart state
 			await addToCart(addToCartPayload);
-
-			// Update local inventory after successful cart addition
-			updateInventoryAfterCartAdd(quantity);
 		}
 	};
 
@@ -150,7 +174,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 					</label>
 					<div className="flex items-center border rounded-md">
 						<button
-							onClick={() => decrementQuantity()}
+							onClick={handleDecrementQuantity}
 							disabled={quantity <= 1}
 							className="px-3 py-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
 						>
@@ -160,9 +184,9 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 							{quantity}
 						</span>
 						<button
-							onClick={() => incrementQuantity()}
+							onClick={handleIncrementQuantity}
 							disabled={
-								quantity >= Math.min(10, product.totalInventory)
+								quantity >= Math.min(10, availableInventory)
 							}
 							className="px-3 py-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
 						>
@@ -172,9 +196,9 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 				</div>
 
 				{/* Inventory Information */}
-				{product.totalInventory <= 5 && product.totalInventory > 0 && (
+				{availableInventory <= 5 && availableInventory > 0 && (
 					<p className="text-sm text-orange-600 font-medium">
-						Only {product.totalInventory} left in stock
+						Only {availableInventory} left in stock
 					</p>
 				)}
 
@@ -183,7 +207,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 					onClick={handleAddToCart}
 					disabled={
 						cartLoading ||
-						product.totalInventory === 0 ||
+						availableInventory === 0 ||
 						(selectedVariant
 							? !selectedVariant.availableForSale
 							: false)
@@ -198,7 +222,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 							<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
 							Adding to Cart...
 						</>
-					) : product.totalInventory === 0 ? (
+					) : availableInventory === 0 ? (
 						"Out of Stock"
 					) : showSelectVariant ? (
 						<>
@@ -227,7 +251,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 				</Button>
 
 				{/* Out of stock message */}
-				{product.totalInventory === 0 && (
+				{availableInventory === 0 && (
 					<p className="text-sm text-red-600 font-medium">
 						This item is currently out of stock
 					</p>
