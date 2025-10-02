@@ -1,6 +1,7 @@
 import { cartFragment } from "../fragments/cart";
 import { imageFragment } from "../fragments/image";
 import { seoFragment } from "../fragments/seo";
+import { variantFragment } from "../fragments/variant";
 
 export const getCartQuery = /* GraphQL */ `
 	query getCart($cartId: ID!) {
@@ -11,4 +12,5 @@ export const getCartQuery = /* GraphQL */ `
 	${cartFragment}
 	${imageFragment}
 	${seoFragment}
+	${variantFragment}
 `;

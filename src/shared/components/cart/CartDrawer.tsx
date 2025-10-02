@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "./CartContext";
+import { CartItem } from "./CartItem";
 import {
 	Drawer,
 	DrawerClose,
@@ -13,8 +14,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Separator } from "@/shared/components/ui/separator";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
-import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
-import Image from "next/image";
+import { X, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 export function CartDrawer() {
@@ -108,104 +108,14 @@ export function CartDrawer() {
 							<ScrollArea className="flex-1 min-h-0">
 								<div className="space-y-4 p-4">
 									{items.map((item) => (
-										<div
+										<CartItem
 											key={item.id}
-											className="flex gap-3 p-3 border rounded-lg"
-										>
-											{/* Product Image */}
-											<div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
-												<Image
-													src={item.productImageUrl}
-													alt={item.productImageAlt}
-													fill
-													className="object-cover"
-													sizes="64px"
-												/>
-											</div>
-
-											{/* Product Details */}
-											<div className="flex-1 min-w-0">
-												<div className="flex items-start justify-between gap-2">
-													<div className="min-w-0 flex-1">
-														<h4 className="font-medium text-sm leading-tight truncate">
-															{item.productTitle}
-														</h4>
-														<p className="text-xs text-muted-foreground mt-1">
-															{
-																item.selectedOptions
-															}
-														</p>
-														<p className="text-sm font-semibold text-primary mt-1">
-															{item.unitPrice}
-														</p>
-													</div>
-
-													{/* Remove Button */}
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-6 w-6 flex-shrink-0"
-														onClick={() =>
-															handleRemoveItem(
-																item.id
-															)
-														}
-													>
-														<Trash2 className="h-3 w-3" />
-													</Button>
-												</div>
-
-												{/* Quantity Controls */}
-												<div className="flex items-center justify-between mt-3">
-													<div className="flex items-center border rounded-md">
-														<Button
-															variant="ghost"
-															size="icon"
-															className="h-8 w-8"
-															onClick={() =>
-																handleUpdateQuantity(
-																	item.id,
-																	item.quantity -
-																		1
-																)
-															}
-															disabled={
-																item.quantity <=
-																1
-															}
-														>
-															<Minus className="h-3 w-3" />
-														</Button>
-														<span className="px-3 py-2 text-sm font-medium min-w-[3rem] text-center">
-															{item.quantity}
-														</span>
-														<Button
-															variant="ghost"
-															size="icon"
-															className="h-8 w-8"
-															onClick={() =>
-																handleUpdateQuantity(
-																	item.id,
-																	item.quantity +
-																		1
-																)
-															}
-															disabled={
-																item.quantity >=
-																(item.maxQuantity ||
-																	10)
-															}
-														>
-															<Plus className="h-3 w-3" />
-														</Button>
-													</div>
-
-													<div className="text-sm font-semibold">
-														{item.totalPrice}
-													</div>
-												</div>
-											</div>
-										</div>
+											item={item}
+											onUpdateQuantity={
+												handleUpdateQuantity
+											}
+											onRemoveItem={handleRemoveItem}
+										/>
 									))}
 								</div>
 							</ScrollArea>

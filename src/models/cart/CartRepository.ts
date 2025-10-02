@@ -180,6 +180,9 @@ export class CartRepository extends BaseRepository<Cart> {
 					id: line.merchandise.id,
 					title: line.merchandise.title,
 					selectedOptions: line.merchandise.selectedOptions,
+					price: line.merchandise.price,
+					availableForSale: line.merchandise.availableForSale,
+					quantityAvailable: line.merchandise.quantityAvailable,
 					product: {
 						id: line.merchandise.product.id,
 						handle: line.merchandise.product.handle,

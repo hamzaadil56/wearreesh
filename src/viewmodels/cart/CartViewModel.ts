@@ -55,7 +55,6 @@ export interface UseCartViewModelReturn {
 
 	// Actions
 	setCart: (cart: Cart | null) => void;
-	addItem: (merchandiseId: string, quantity?: number) => Promise<void>;
 	removeItem: (lineId: string) => Promise<void>;
 	updateItemQuantity: (lineId: string, quantity: number) => Promise<void>;
 	clearCart: () => Promise<void>;
@@ -143,22 +142,6 @@ export function useCartViewModel(): UseCartViewModelReturn {
 			return updateViewStateFromCart(newState, cart);
 		});
 	}, []);
-
-	// Add item to cart
-	const addItem = useCallback(
-		async (merchandiseId: string, quantity: number = 1): Promise<void> => {
-			const result = await executeOperation(async () => {
-				// This would typically call a cart service/repository
-				// For now, we'll simulate the operation
-				await new Promise((resolve) => setTimeout(resolve, 500));
-
-				// Update local state optimistically
-				// In a real implementation, this would update the cart through an API
-				return true;
-			}, "Failed to add item to cart");
-		},
-		[executeOperation]
-	);
 
 	// Remove item from cart
 	const removeItem = useCallback(
@@ -445,7 +428,6 @@ export function useCartViewModel(): UseCartViewModelReturn {
 
 		// Actions
 		setCart,
-		addItem,
 		removeItem,
 		updateItemQuantity,
 		clearCart,
@@ -500,8 +482,8 @@ const updateViewStateFromCart = (
 			productHandle: product.handle,
 			productImageUrl: primaryImage?.url || "/placeholder-image.jpg",
 			productImageAlt: primaryImage?.altText || product.title,
-			unitPrice: item.formattedUnitPrice,
-			totalPrice: item.formattedTotal,
+			unitPrice: item.merchandise?.price?.amount,
+			totalPrice: item.cost.totalAmount?.amount,
 		};
 	};
 

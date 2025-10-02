@@ -16,6 +16,7 @@ export interface CartItemData {
 			name: string;
 			value: string;
 		}[];
+		price: Money;
 		product: Product;
 	};
 	cost: {

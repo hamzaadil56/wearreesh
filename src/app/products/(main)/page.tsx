@@ -10,8 +10,6 @@ export default async function ProductsPage(props: {
 	const searchParams = await props.searchParams;
 	const { sort, q: searchValue } = searchParams as { [key: string]: string };
 
-	console.log(searchValue, "searchValue");
-
 	try {
 		// Optionally fetch initial data on the server for better SEO and initial load
 		const repository = new ProductRepository();

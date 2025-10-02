@@ -31,6 +31,12 @@ export const cartFragment = /* GraphQL */ `
 						... on ProductVariant {
 							id
 							title
+							availableForSale
+							quantityAvailable
+							price {
+								amount
+								currencyCode
+							}
 							selectedOptions {
 								name
 								value
@@ -60,17 +66,7 @@ export const cartFragment = /* GraphQL */ `
 								variants(first: 250) {
 									edges {
 										node {
-											id
-											title
-											availableForSale
-											selectedOptions {
-												name
-												value
-											}
-											price {
-												amount
-												currencyCode
-											}
+											...variant
 										}
 									}
 								}
