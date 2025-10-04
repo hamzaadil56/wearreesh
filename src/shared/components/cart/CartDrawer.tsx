@@ -14,7 +14,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Separator } from "@/shared/components/ui/separator";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
-import { X, ShoppingBag } from "lucide-react";
+import { X, ShoppingBag, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export function CartDrawer() {
@@ -32,6 +32,7 @@ export function CartDrawer() {
 		removeItem,
 		clearCart,
 		closeCart,
+		isClearingCart,
 	} = cart;
 
 	const handleUpdateQuantity = async (
@@ -181,8 +182,16 @@ export function CartDrawer() {
 										onClick={handleClearCart}
 										className="w-full"
 										size="sm"
+										disabled={isClearingCart}
 									>
-										Clear Cart
+										{isClearingCart ? (
+											<>
+												<Loader2 className="h-4 w-4 animate-spin mr-2" />
+												Clearing Cart...
+											</>
+										) : (
+											"Clear Cart"
+										)}
 									</Button>
 								</div>
 

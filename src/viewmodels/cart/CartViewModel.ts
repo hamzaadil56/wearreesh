@@ -348,27 +348,54 @@ export function useCartViewModel(): UseCartViewModelReturn {
 		const result = await executeWithLoading(
 			OPERATIONS.CLEAR_CART,
 			async () => {
-				// This would need to be implemented in Cart.actions.ts
-				// For now, we'll just clear the local state
-				return null;
+				if (!viewState.cart?.id || viewState.cart.lines.length === 0) {
+					// No cart or cart is already empty, just return null
+					return null;
+				}
+
+				// Get all line IDs from the current cart
+				const allLineIds = viewState.cart.lines.map((line) => line.id);
+
+				// Use removeFromCartAction to remove all items from the backend
+				const shopifyCart = await removeFromCartAction(
+					viewState.cart.id,
+					allLineIds
+				);
+
+				return shopifyCart;
 			}
 		);
 
 		if (result.success) {
-			setViewState((prev) => ({
-				...prev,
-				cart: null,
-				items: [],
-				totalQuantity: 0,
-				subtotal: "$0.00",
-				tax: "$0.00",
-				total: "$0.00",
-				isEmpty: true,
-			}));
+			if (result.data) {
+				// Update with the cleared cart from backend
+				setViewState((prev) => {
+					const newState = {
+						...prev,
+						cart: result.data as ShopifyCart,
+					};
+					return updateViewStateFromCart(
+						newState,
+						result.data as ShopifyCart
+					);
+				});
+			} else {
+				// No cart data returned, clear local state
+				setViewState((prev) => ({
+					...prev,
+					cart: null,
+					items: [],
+					totalQuantity: 0,
+					subtotal: "$0.00",
+					tax: "$0.00",
+					total: "$0.00",
+					isEmpty: true,
+				}));
+			}
 		} else if (result.error) {
 			handleError(result.error, "Failed to clear cart");
 		}
-	}, [executeWithLoading, handleError]);
+	}, [executeWithLoading, handleError, viewState.cart]);
 
 	// Return state and actions
 	return {
