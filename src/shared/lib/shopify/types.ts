@@ -9,10 +9,10 @@ export type Edge<T> = {
 };
 
 export type Cart = Omit<ShopifyCart, "lines"> & {
-	lines: CartItem[];
+	lines: ShopifyCartItem[];
 };
 
-export type CartItem = {
+export type ShopifyCartItem = {
 	id: string;
 	quantity: number;
 	cost: {
@@ -26,6 +26,7 @@ export type CartItem = {
 			value: string;
 		}[];
 		product: Product;
+		price: Money;
 	};
 };
 
@@ -102,7 +103,7 @@ export type ShopifyCart = {
 		totalAmount: Money;
 		totalTaxAmount: Money;
 	};
-	lines: Connection<CartItem>;
+	lines: Connection<ShopifyCartItem>;
 	totalQuantity: number;
 };
 

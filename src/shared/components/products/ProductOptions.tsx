@@ -5,6 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import type { ProductOptionsProps } from "@/shared/types/props";
 import { useProductViewModel } from "@/viewmodels/products/useProductViewModel";
 import { useCart } from "@/shared/components/cart";
+import { useLoadingStates } from "@/shared/hooks/useLoadingStates";
 
 export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 	const {
@@ -18,7 +19,10 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 		selectedVariant,
 	} = useProductViewModel(viewModel);
 
-	const { addToCart, isLoading: cartLoading, items: cartItems } = useCart();
+	const { addToCart, items: cartItems, isAddingToCart } = useCart();
+
+	// Loading states hook
+	const { isLoading: isOperationLoading } = useLoadingStates();
 
 	// State for button animation and text
 	const [showSelectVariant, setShowSelectVariant] = useState(false);
@@ -211,7 +215,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 				<Button
 					onClick={handleAddToCart}
 					disabled={
-						cartLoading ||
+						isAddingToCart ||
 						availableInventory === 0 ||
 						(selectedVariant
 							? !selectedVariant.availableForSale
@@ -223,7 +227,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 					}`}
 					size="lg"
 				>
-					{cartLoading ? (
+					{isAddingToCart ? (
 						<>
 							<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
 							Adding to Cart...

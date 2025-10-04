@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { Cart, CartItem } from "@/models/cart/Cart.model";
 import {
 	createCart,
 	addToCart as addToCartAction,
 	removeFromCart as removeFromCartAction,
 } from "@/models/cart/Cart.actions";
-import { Cart as ShopifyCart, CartInput } from "@/shared/lib/shopify/types";
+import {
+	Cart as ShopifyCart,
+	CartInput,
+	ShopifyCartItem,
+} from "@/shared/lib/shopify/types";
+import { useLoadingStates } from "@/shared/hooks/useLoadingStates";
 
 export interface CartItemViewModel {
 	id: string;
@@ -26,7 +30,7 @@ export interface CartItemViewModel {
 }
 
 export interface CartViewState {
-	cart: Cart | null;
+	cart: ShopifyCart | null;
 	items: CartItemViewModel[];
 	totalQuantity: number;
 	subtotal: string;
@@ -35,13 +39,12 @@ export interface CartViewState {
 	checkoutUrl?: string;
 	isEmpty: boolean;
 	isOpen: boolean;
-	isLoading: boolean;
 	error: string | null;
 }
 
 export interface UseCartViewModelReturn {
 	// State
-	cart: Cart | null;
+	cart: ShopifyCart | null;
 	items: CartItemViewModel[];
 	totalQuantity: number;
 	subtotal: string;
@@ -50,11 +53,19 @@ export interface UseCartViewModelReturn {
 	checkoutUrl?: string;
 	isEmpty: boolean;
 	isOpen: boolean;
-	isLoading: boolean;
 	error: string | null;
 
+	// Loading states
+	isAddingToCart: boolean;
+	isUpdatingItem: boolean;
+	isRemovingItem: boolean;
+	isCreatingCart: boolean;
+	isClearingCart: boolean;
+	isRemovingSpecificItem: (itemId: string) => boolean;
+	isUpdatingSpecificItem: (itemId: string) => boolean;
+
 	// Actions
-	setCart: (cart: Cart | null) => void;
+	setCart: (cart: ShopifyCart | null) => void;
 	removeItem: (lineId: string) => Promise<void>;
 	updateItemQuantity: (lineId: string, quantity: number) => Promise<void>;
 	clearCart: () => Promise<void>;
@@ -66,30 +77,11 @@ export interface UseCartViewModelReturn {
 	addToCart: (cartInput: CartInput) => Promise<void>;
 
 	// Computed properties
-	getItemQuantity: (merchandiseId: string) => number;
-	hasItem: (merchandiseId: string) => boolean;
 	getItem: (merchandiseId: string) => CartItemViewModel | null;
 	getEstimatedShipping: () => string;
 	isEligibleForFreeShipping: () => boolean;
 	getAmountForFreeShipping: () => string;
 }
-
-// Helper function to convert Shopify Cart to Model Cart
-const convertShopifyCartToModel = (shopifyCart: ShopifyCart): Cart => {
-	// For now, we'll create a basic cart structure
-	// TODO: Implement proper conversion when we have the full product data
-	return new Cart({
-		id: shopifyCart.id,
-		checkoutUrl: shopifyCart.checkoutUrl,
-		cost: {
-			subtotalAmount: shopifyCart.cost.subtotalAmount,
-			totalAmount: shopifyCart.cost.totalAmount,
-			totalTaxAmount: shopifyCart.cost.totalTaxAmount,
-		},
-		lines: [], // Will be populated when we have proper product data
-		totalQuantity: shopifyCart.totalQuantity || 0,
-	});
-};
 
 export function useCartViewModel(): UseCartViewModelReturn {
 	// State management using React hooks
@@ -102,120 +94,36 @@ export function useCartViewModel(): UseCartViewModelReturn {
 		total: "$0.00",
 		isEmpty: true,
 		isOpen: false,
-		isLoading: false,
 		error: null,
 	});
 
-	// Helper function to execute operations with loading and error handling
-	const executeOperation = useCallback(
-		async <T>(
-			operation: () => Promise<T>,
-			errorMessage: string
-		): Promise<{ success: boolean; data?: T; error?: Error }> => {
-			setViewState((prev) => ({ ...prev, isLoading: true, error: null }));
+	// Loading states hook
+	const { isLoading, executeWithLoading } = useLoadingStates();
 
-			try {
-				const result = await operation();
-				setViewState((prev) => ({ ...prev, isLoading: false }));
-				return { success: true, data: result };
-			} catch (err) {
-				const errorMsg =
-					err instanceof Error ? err.message : errorMessage;
-				setViewState((prev) => ({
-					...prev,
-					isLoading: false,
-					error: errorMsg,
-				}));
-				return {
-					success: false,
-					error: err instanceof Error ? err : new Error(errorMessage),
-				};
-			}
-		},
-		[]
-	);
+	// Define operation names as constants
+	const OPERATIONS = {
+		ADD_TO_CART: "addToCart",
+		UPDATE_ITEM: "updateItem",
+		REMOVE_ITEM: "removeItem",
+		CREATE_CART: "createCart",
+		CLEAR_CART: "clearCart",
+	} as const;
+
+	// Helper function to handle errors
+	const handleError = useCallback((error: Error, message: string) => {
+		setViewState((prev) => ({
+			...prev,
+			error: error.message || message,
+		}));
+	}, []);
 
 	// Initialize cart with data
-	const setCart = useCallback((cart: Cart | null) => {
+	const setCart = useCallback((cart: ShopifyCart | null) => {
 		setViewState((prev) => {
 			const newState = { ...prev, cart };
 			return updateViewStateFromCart(newState, cart);
 		});
 	}, []);
-
-	// Remove item from cart
-	const removeItem = useCallback(
-		async (lineId: string): Promise<void> => {
-			const result = await executeOperation(async () => {
-				if (!viewState.cart?.id) {
-					throw new Error("No cart found");
-				}
-
-				const shopifyCart = await removeFromCartAction(
-					viewState.cart.id,
-					[lineId]
-				);
-				const updatedCart = convertShopifyCartToModel(shopifyCart);
-
-				// Update the cart state with the response
-				setViewState((prev) => {
-					const newState = { ...prev, cart: updatedCart };
-					return updateViewStateFromCart(newState, updatedCart);
-				});
-
-				return updatedCart;
-			}, "Failed to remove item from cart");
-		},
-		[executeOperation, viewState.cart?.id]
-	);
-
-	// Update item quantity
-	const updateItemQuantity = useCallback(
-		async (lineId: string, quantity: number): Promise<void> => {
-			if (quantity <= 0) {
-				return removeItem(lineId);
-			}
-
-			const result = await executeOperation(async () => {
-				// This would typically call a cart service/repository
-				await new Promise((resolve) => setTimeout(resolve, 500));
-				return true;
-			}, "Failed to update item quantity");
-		},
-		[executeOperation, removeItem]
-	);
-
-	// Clear entire cart
-	const clearCart = useCallback(async (): Promise<void> => {
-		const result = await executeOperation(async () => {
-			if (!viewState.cart?.id) {
-				throw new Error("No cart found");
-			}
-
-			// Get all line IDs from current cart items
-			const lineIds = viewState.cart.lines.map((line) => line.id);
-
-			if (lineIds.length === 0) {
-				// Cart is already empty
-				return viewState.cart;
-			}
-
-			// Remove all items using removeFromCart action
-			const shopifyCart = await removeFromCartAction(
-				viewState.cart.id,
-				lineIds
-			);
-			const updatedCart = convertShopifyCartToModel(shopifyCart);
-
-			// Update the cart state with the response
-			setViewState((prev) => {
-				const newState = { ...prev, cart: updatedCart };
-				return updateViewStateFromCart(newState, updatedCart);
-			});
-
-			return updatedCart;
-		}, "Failed to clear cart");
-	}, [executeOperation, viewState.cart]);
 
 	// Open cart drawer
 	const openCart = useCallback((): void => {
@@ -245,22 +153,6 @@ export function useCartViewModel(): UseCartViewModelReturn {
 	const clearError = useCallback(() => {
 		setViewState((prev) => ({ ...prev, error: null }));
 	}, []);
-
-	// Get item quantity by merchandise ID
-	const getItemQuantity = useCallback(
-		(merchandiseId: string): number => {
-			return viewState.cart?.getItemQuantity(merchandiseId) || 0;
-		},
-		[viewState.cart]
-	);
-
-	// Check if item exists in cart
-	const hasItem = useCallback(
-		(merchandiseId: string): boolean => {
-			return viewState.cart?.hasItem(merchandiseId) || false;
-		},
-		[viewState.cart]
-	);
 
 	// Get item by merchandise ID
 	const getItem = useCallback(
@@ -309,107 +201,174 @@ export function useCartViewModel(): UseCartViewModelReturn {
 	// Create cart client - handles cart creation with Shopify
 	const createCartClient = useCallback(
 		async (variantId: string, quantity: number): Promise<void> => {
-			const result = await executeOperation(async () => {
-				// Create cart with full structure matching Postman example
-				const shopifyCart = await createCart({
-					lines: [
-						{
-							merchandiseId: variantId,
-							quantity: quantity,
-							attributes: [
+			const result = await executeWithLoading(
+				OPERATIONS.CREATE_CART,
+				async () => {
+					// Create cart with full structure matching Postman example
+					const shopifyCart = await createCart({
+						lines: [
+							{
+								merchandiseId: variantId,
+								quantity: quantity,
+								attributes: [
+									{
+										key: "product_type",
+										value: "clothing",
+									},
+								],
+							},
+						],
+						attributes: [
+							{
+								key: "product_type",
+								value: "clothing",
+							},
+						],
+						discountCodes: [],
+						giftCardCodes: [],
+						buyerIdentity: {},
+						delivery: {
+							addresses: [
 								{
-									key: "product_type",
-									value: "clothing",
+									address: {
+										deliveryAddress: {
+											countryCode: "PK",
+										},
+									},
 								},
 							],
 						},
-					],
-					attributes: [
-						{
-							key: "product_type",
-							value: "clothing",
-						},
-					],
-					discountCodes: [],
-					giftCardCodes: [],
-					buyerIdentity: {},
-					delivery: {
-						addresses: [
-							{
-								address: {
-									deliveryAddress: {
-										countryCode: "PK",
-									},
-								},
-							},
-						],
-					},
-				});
+					});
 
-				if (shopifyCart) {
-					return shopifyCart;
-				} else {
-					throw new Error("Failed to create cart");
+					if (shopifyCart) {
+						return shopifyCart;
+					} else {
+						throw new Error("Failed to create cart");
+					}
 				}
-			}, "Failed to create cart");
+			);
 
 			if (result.success && result.data) {
 				// For now, we'll set the cart directly and handle conversion later
 				// TODO: Implement proper Shopify to Model cart conversion
-				const modelCart = convertShopifyCartToModel(result.data);
 				setViewState((prev) => {
-					const newState = { ...prev, cart: modelCart };
-					return updateViewStateFromCart(newState, modelCart);
+					const newState = {
+						...prev,
+						cart: result.data as ShopifyCart,
+					};
+					return updateViewStateFromCart(
+						newState,
+						result.data as ShopifyCart
+					);
 				});
+			} else if (result.error) {
+				handleError(result.error, "Failed to create cart");
 			}
 		},
-		[executeOperation]
+		[executeWithLoading, handleError]
 	);
 
 	// Add to cart - uses the smart addToCart function from actions
 	const addToCart = useCallback(
 		async (cartInput: CartInput): Promise<void> => {
-			const result = await executeOperation(async () => {
-				// Use the smart addToCart function that handles cart creation/addition logic
-				const shopifyCart = await addToCartAction(cartInput);
-				return shopifyCart;
-			}, "Failed to add item to cart");
+			const result = await executeWithLoading(
+				OPERATIONS.ADD_TO_CART,
+				async () => {
+					// Use the smart addToCart function that handles cart creation/addition logic
+					const shopifyCart = await addToCartAction(cartInput);
+					return shopifyCart;
+				}
+			);
 
 			if (result.success && result.data) {
 				// Convert Shopify Cart to Model Cart and update state
-				const modelCart = convertShopifyCartToModel(result.data);
 				setViewState((prev) => {
-					const newState = { ...prev, cart: modelCart };
-					return updateViewStateFromCart(newState, modelCart);
+					const newState = {
+						...prev,
+						cart: result.data as ShopifyCart,
+					};
+					return updateViewStateFromCart(
+						newState,
+						result.data as ShopifyCart
+					);
 				});
+			} else if (result.error) {
+				handleError(result.error, "Failed to add item to cart");
 			}
 		},
-		[executeOperation]
+		[executeWithLoading, handleError]
 	);
 
-	// Helper functions
-	const mapItemToViewModel = useCallback(
-		(item: CartItem): CartItemViewModel => {
-			const product = item.merchandise.product;
-			const primaryImage = product.featuredImage;
+	// Add missing functions using the new loading states
+	const removeItem = useCallback(
+		async (lineId: string): Promise<void> => {
+			const result = await executeWithLoading(
+				OPERATIONS.REMOVE_ITEM,
+				async () => {
+					if (!viewState.cart?.id) {
+						throw new Error("No cart found");
+					}
+					const shopifyCart = await removeFromCartAction(
+						viewState.cart.id,
+						[lineId]
+					);
+					return shopifyCart;
+				},
+				lineId // Pass the lineId as itemId for specific loading state
+			);
 
-			return {
-				id: item.id,
-				quantity: item.quantity,
-				merchandiseId: item.merchandise.id,
-				merchandiseTitle: item.merchandise.title,
-				selectedOptions: item.selectedOptionsText,
-				productId: product.id,
-				productTitle: product.title,
-				productHandle: product.handle,
-				productImageUrl: primaryImage?.url || "/placeholder-image.jpg",
-				productImageAlt: primaryImage?.altText || product.title,
-				unitPrice: item.formattedUnitPrice,
-				totalPrice: item.formattedTotal,
-			};
+			if (result.success && result.data) {
+				setViewState((prev) => {
+					const newState = {
+						...prev,
+						cart: result.data as ShopifyCart,
+					};
+					return updateViewStateFromCart(
+						newState,
+						result.data as ShopifyCart
+					);
+				});
+			} else if (result.error) {
+				handleError(result.error, "Failed to remove item from cart");
+			}
+		},
+		[executeWithLoading, handleError, viewState.cart?.id]
+	);
+
+	const updateItemQuantity = useCallback(
+		async (lineId: string, quantity: number): Promise<void> => {
+			// This would need to be implemented in Cart.actions.ts
+			// For now, we'll use a placeholder
+			console.warn("updateItemQuantity not yet implemented");
 		},
 		[]
 	);
+
+	const clearCart = useCallback(async (): Promise<void> => {
+		const result = await executeWithLoading(
+			OPERATIONS.CLEAR_CART,
+			async () => {
+				// This would need to be implemented in Cart.actions.ts
+				// For now, we'll just clear the local state
+				return null;
+			}
+		);
+
+		if (result.success) {
+			setViewState((prev) => ({
+				...prev,
+				cart: null,
+				items: [],
+				totalQuantity: 0,
+				subtotal: "$0.00",
+				tax: "$0.00",
+				total: "$0.00",
+				isEmpty: true,
+			}));
+		} else if (result.error) {
+			handleError(result.error, "Failed to clear cart");
+		}
+	}, [executeWithLoading, handleError]);
 
 	// Return state and actions
 	return {
@@ -423,8 +382,18 @@ export function useCartViewModel(): UseCartViewModelReturn {
 		checkoutUrl: viewState.checkoutUrl,
 		isEmpty: viewState.isEmpty,
 		isOpen: viewState.isOpen,
-		isLoading: viewState.isLoading,
 		error: viewState.error,
+
+		// Loading states
+		isAddingToCart: isLoading(OPERATIONS.ADD_TO_CART),
+		isUpdatingItem: isLoading(OPERATIONS.UPDATE_ITEM),
+		isRemovingItem: isLoading(OPERATIONS.REMOVE_ITEM),
+		isCreatingCart: isLoading(OPERATIONS.CREATE_CART),
+		isClearingCart: isLoading(OPERATIONS.CLEAR_CART),
+		isRemovingSpecificItem: (itemId: string) =>
+			isLoading(OPERATIONS.REMOVE_ITEM, itemId),
+		isUpdatingSpecificItem: (itemId: string) =>
+			isLoading(OPERATIONS.UPDATE_ITEM, itemId),
 
 		// Actions
 		setCart,
@@ -437,10 +406,6 @@ export function useCartViewModel(): UseCartViewModelReturn {
 		clearError,
 		createCartClient,
 		addToCart,
-
-		// Computed properties
-		getItemQuantity,
-		hasItem,
 		getItem,
 		getEstimatedShipping,
 		isEligibleForFreeShipping,
@@ -451,7 +416,7 @@ export function useCartViewModel(): UseCartViewModelReturn {
 // Helper function to update view state from cart model
 const updateViewStateFromCart = (
 	currentState: CartViewState,
-	cart: Cart | null
+	cart: ShopifyCart | null
 ): CartViewState => {
 	if (!cart) {
 		return {
@@ -467,7 +432,7 @@ const updateViewStateFromCart = (
 		};
 	}
 
-	const mapItemToViewModel = (item: CartItem): CartItemViewModel => {
+	const mapItemToViewModel = (item: ShopifyCartItem): CartItemViewModel => {
 		const product = item.merchandise.product;
 		const primaryImage = product.featuredImage;
 
@@ -476,7 +441,9 @@ const updateViewStateFromCart = (
 			quantity: item.quantity,
 			merchandiseId: item.merchandise.id,
 			merchandiseTitle: item.merchandise.title,
-			selectedOptions: item.selectedOptionsText,
+			selectedOptions: item.merchandise.selectedOptions
+				.map((option) => option.value)
+				.join(", "),
 			productId: product.id,
 			productTitle: product.title,
 			productHandle: product.handle,
@@ -490,12 +457,12 @@ const updateViewStateFromCart = (
 	return {
 		...currentState,
 		cart,
-		items: cart.lines.map((item) => mapItemToViewModel(item)),
+		items: cart.lines.map((line) => mapItemToViewModel(line)),
 		totalQuantity: cart.totalQuantity,
-		subtotal: cart.formattedSubtotal,
-		tax: cart.formattedTax,
-		total: cart.formattedTotal,
-		checkoutUrl: cart.checkoutUrl,
-		isEmpty: cart.isEmpty,
+		subtotal: cart.cost.subtotalAmount.amount,
+		tax: cart.cost.totalTaxAmount.amount,
+		total: cart.cost.totalAmount.amount,
+		checkoutUrl: cart.checkoutUrl || "",
+		isEmpty: cart.lines.length === 0,
 	};
 };

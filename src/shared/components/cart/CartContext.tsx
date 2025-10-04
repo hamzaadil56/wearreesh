@@ -1,12 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { Cart } from "@/models/cart/Cart.model";
 import {
 	useCartViewModel,
 	UseCartViewModelReturn,
 } from "@/viewmodels/cart/CartViewModel";
-
+import { Cart } from "@/shared/lib/shopify/types";
 interface CartContextType extends UseCartViewModelReturn {}
 
 const CartContext = createContext<CartContextType | undefined>(undefined);

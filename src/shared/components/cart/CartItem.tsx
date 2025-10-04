@@ -2,8 +2,9 @@
 
 import { Button } from "@/shared/components/ui/button";
 import { CartItemViewModel } from "@/viewmodels";
-import { Plus, Minus, Trash2 } from "lucide-react";
+import { Plus, Minus, Trash2, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useCart } from "@/shared/components/cart";
 
 export interface CartItemProps {
 	item: CartItemViewModel;
@@ -16,6 +17,13 @@ export function CartItem({
 	onUpdateQuantity,
 	onRemoveItem,
 }: CartItemProps) {
+	// Get loading states from cart context
+	const { isRemovingSpecificItem, isUpdatingSpecificItem } = useCart();
+
+	// Check if this specific item is being removed or updated
+	const isItemBeingRemoved = isRemovingSpecificItem(item.id);
+	const isItemBeingUpdated = isUpdatingSpecificItem(item.id);
+
 	const handleUpdateQuantity = (newQuantity: number) => {
 		onUpdateQuantity(item.id, newQuantity);
 	};
@@ -59,8 +67,13 @@ export function CartItem({
 						size="icon"
 						className="h-6 w-6 flex-shrink-0"
 						onClick={handleRemoveItem}
+						disabled={isItemBeingRemoved}
 					>
-						<Trash2 className="h-3 w-3" />
+						{isItemBeingRemoved ? (
+							<Loader2 className="h-3 w-3 animate-spin" />
+						) : (
+							<Trash2 className="h-3 w-3" />
+						)}
 					</Button>
 				</div>
 
@@ -74,9 +87,13 @@ export function CartItem({
 							onClick={() =>
 								handleUpdateQuantity(item.quantity - 1)
 							}
-							disabled={item.quantity <= 1}
+							disabled={item.quantity <= 1 || isItemBeingUpdated}
 						>
-							<Minus className="h-3 w-3" />
+							{isItemBeingUpdated ? (
+								<Loader2 className="h-3 w-3 animate-spin" />
+							) : (
+								<Minus className="h-3 w-3" />
+							)}
 						</Button>
 						<span className="px-3 py-2 text-sm font-medium min-w-[3rem] text-center">
 							{item.quantity}
@@ -88,9 +105,16 @@ export function CartItem({
 							onClick={() =>
 								handleUpdateQuantity(item.quantity + 1)
 							}
-							disabled={item.quantity >= (item.maxQuantity || 10)}
+							disabled={
+								item.quantity >= (item.maxQuantity || 10) ||
+								isItemBeingUpdated
+							}
 						>
-							<Plus className="h-3 w-3" />
+							{isItemBeingUpdated ? (
+								<Loader2 className="h-3 w-3 animate-spin" />
+							) : (
+								<Plus className="h-3 w-3" />
+							)}
 						</Button>
 					</div>
 
