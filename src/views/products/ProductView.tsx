@@ -1,10 +1,7 @@
 import type { IIndividualProductViewModel } from "@/viewmodels/products/IndividualProductViewModel";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-	ProductImageGallery,
-	ProductOptions,
-} from "@/shared/components/products";
+import { ProductImageGallery } from "@/shared/components/products";
 import Link from "next/link";
 
 interface ProductViewProps {

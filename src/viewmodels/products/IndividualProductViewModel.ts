@@ -1,6 +1,7 @@
 import { BaseViewModel } from "../core/BaseViewModel";
-import { Product, ProductVariant } from "@/models/product/Product.model";
+import { Product } from "@/models/product/Product.model";
 import { ProductRepository } from "@/models/product/ProductRepository";
+import { ProductVariant } from "@/shared/lib/shopify/types";
 
 export interface IndividualProductViewState {
 	product: Product | null;

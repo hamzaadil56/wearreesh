@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { CartProvider } from "@/shared/components/cart";

@@ -274,7 +274,6 @@ export async function getCart(cartId: string): Promise<Cart | undefined> {
 		tags: [TAGS.cart],
 	});
 
-	console.log("res", res.body.data.cart);
 	// Old carts becomes `null` when you checkout.
 	if (!res.body.data.cart) {
 		return undefined;

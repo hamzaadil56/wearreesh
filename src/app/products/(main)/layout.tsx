@@ -20,7 +20,7 @@ export default async function ProductsLayout({
 		const repository = new ProductRepository();
 		const options = await repository.getProductsOptions();
 		optionsData = options.options || [];
-	} catch (error) {
+	} catch {
 		return <div>Error fetching options data</div>;
 	}
 
