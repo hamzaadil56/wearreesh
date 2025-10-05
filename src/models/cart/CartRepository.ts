@@ -1,5 +1,5 @@
 import { BaseRepository } from "../core/Repository";
-import { Cart, CartData } from "./Cart.model";
+import { Cart } from "./Cart.model";
 import {
 	addToCart,
 	updateCart,
@@ -7,11 +7,6 @@ import {
 	getCart,
 } from "@/shared/lib/shopify";
 import type { CartLineInput } from "@/shared/lib/shopify/types";
-
-interface CartLineUpdateInput {
-	id: string;
-	quantity: number;
-}
 
 export class CartRepository extends BaseRepository<Cart> {
 	/**

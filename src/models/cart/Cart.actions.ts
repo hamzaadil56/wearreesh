@@ -12,10 +12,8 @@ import {
 	CartLineInput,
 	ShopifyAddToCartOperation,
 	ShopifyCreateCartOperation,
-	ShopifyCartOperation,
 	ShopifyRemoveFromCartOperation,
 } from "@/shared/lib/shopify/types";
-import { getCartQuery } from "@/shared/lib/shopify/queries/cart";
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { TAGS } from "@/shared/lib/shopify/constants";

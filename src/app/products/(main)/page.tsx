@@ -8,7 +8,7 @@ export default async function ProductsPage(props: {
 	searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
 	const searchParams = await props.searchParams;
-	const { sort, q: searchValue } = searchParams as { [key: string]: string };
+	const { q: searchValue } = searchParams as { [key: string]: string };
 
 	try {
 		// Optionally fetch initial data on the server for better SEO and initial load

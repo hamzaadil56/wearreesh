@@ -6,9 +6,10 @@ import {
 	UseCartViewModelReturn,
 } from "@/viewmodels/cart/CartViewModel";
 import { Cart } from "@/shared/lib/shopify/types";
-interface CartContextType extends UseCartViewModelReturn {}
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<UseCartViewModelReturn | undefined>(
+	undefined
+);
 
 export const useCart = () => {
 	const context = useContext(CartContext);
@@ -34,9 +35,7 @@ export function CartProvider({ children, initialCart }: CartProviderProps) {
 		}
 	}, [initialCart]);
 
-	const contextValue: CartContextType = {
-		...cartViewModel,
-	};
+	const contextValue: UseCartViewModelReturn = cartViewModel;
 
 	return (
 		<CartContext.Provider value={contextValue}>

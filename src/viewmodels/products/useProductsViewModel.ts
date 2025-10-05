@@ -3,8 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Product } from "@/models/product/Product.model";
 import { ProductRepository } from "@/models/product/ProductRepository";
-import { SearchParams, PaginatedResult } from "@/models/core/types";
-import type { ProductOption } from "@/shared/lib/shopify/types";
+import { SearchParams } from "@/models/core/types";
 import { ProductViewModel } from "@/shared/types/viewModels";
 
 export interface ProductsViewState {

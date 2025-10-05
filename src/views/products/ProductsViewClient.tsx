@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useProductsViewModel } from "@/viewmodels/products/useProductsViewModel";
 import { ProductsWithFilter } from "@/shared/components/layout";
 import { ProductViewModel } from "@/shared/types/viewModels";
@@ -13,7 +12,6 @@ interface ProductsViewClientProps {
 
 export default function ProductsViewClient({
 	initialProducts = [],
-	initialTotalCount = 0,
 }: ProductsViewClientProps) {
 	const { products, totalCount, isLoading, error, loadProducts, clearError } =
 		useProductsViewModel(initialProducts);
