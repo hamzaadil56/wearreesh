@@ -268,7 +268,7 @@ export async function getCart(cartId: string): Promise<Cart | undefined> {
 		return undefined;
 	}
 	const res = await shopifyFetch<ShopifyCartOperation>({
-		cache: "no-store",
+		cache: "force-cache",
 		query: getCartQuery,
 		variables: { cartId },
 		tags: [TAGS.cart],
@@ -435,6 +435,7 @@ export async function getProducts({
 			reverse,
 			sortKey,
 		},
+		cache: "force-cache",
 	});
 
 	return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
