@@ -14,7 +14,7 @@ interface FilterItemProps {
 export function FilterItem({ value, title, children }: FilterItemProps) {
 	return (
 		<AccordionItem value={value}>
-			<AccordionTrigger className="text-base font-normal text-black hover:text-gray-700 cursor-pointer">
+			<AccordionTrigger className="text-base font-normal text-foreground hover:text-muted-foreground cursor-pointer">
 				{title}
 			</AccordionTrigger>
 			<AccordionContent>{children}</AccordionContent>

@@ -14,8 +14,8 @@ export function OptionValue({
 			className={cn(
 				"inline-flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-colors mr-2 mb-2",
 				selected
-					? "bg-black text-white"
-					: "bg-gray-100 text-black hover:bg-gray-200"
+					? "bg-primary text-primary-foreground"
+					: "bg-secondary text-secondary-foreground hover:bg-secondary/80"
 			)}
 		>
 			{value} ({count})

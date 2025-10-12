@@ -23,25 +23,8 @@ export function FilterSection({
 	onOptionToggle,
 	onAvailabilityChange,
 }: FilterSectionProps) {
-	// Create default values for accordion (sections that should be open by default)
-	const getDefaultAccordionValues = () => {
-		const defaultValues = ["availability"]; // Always open availability
-		// Also open size filter by default if it exists
-		const sizeOption = optionsData.find(
-			(option) => option.name.toLowerCase() === "size"
-		);
-		if (sizeOption) {
-			defaultValues.push("size");
-		}
-		return defaultValues;
-	};
-
 	return (
-		<Accordion
-			type="multiple"
-			defaultValue={getDefaultAccordionValues()}
-			className="w-full"
-		>
+		<Accordion type="multiple" className="w-full">
 			{/* Availability Filter */}
 			<FilterItem value="availability" title="Availability">
 				<AvailabilityFilter

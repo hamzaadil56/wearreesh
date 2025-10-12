@@ -8,7 +8,7 @@ export function FilterHeader({
 }: FilterHeaderProps) {
 	return (
 		<div className="flex items-center justify-between mb-4">
-			<h3 className="text-lg font-semibold text-black">Filters</h3>
+			<h3 className="text-lg font-semibold text-foreground">Filters</h3>
 			{activeFilterCount > 0 && (
 				<Button
 					variant="outline"

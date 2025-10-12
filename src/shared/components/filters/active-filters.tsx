@@ -17,8 +17,8 @@ export function ActiveFilters({
 	if (activeFilterCount === 0) return null;
 
 	return (
-		<div className="mt-4 pt-4 border-t border-gray-200">
-			<h4 className="text-sm font-medium text-gray-900 mb-2">
+		<div className="mt-4 pt-4 border-t border-border">
+			<h4 className="text-sm font-medium text-foreground mb-2">
 				Active Filters
 			</h4>
 			<div className="flex flex-wrap gap-2">

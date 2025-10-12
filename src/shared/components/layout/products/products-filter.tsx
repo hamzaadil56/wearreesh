@@ -26,7 +26,7 @@ export function ProductsFilter({
 	return (
 		<div
 			className={cn(
-				"w-full max-w-sm bg-white border border-gray-200 rounded-lg p-4",
+				"w-full max-w-sm bg-card border border-border rounded-lg p-4",
 				className
 			)}
 		>
