@@ -23,9 +23,6 @@
 # cloudflare
 /.open-next/
 /cloudflare-env.d.ts
-/wrangler.toml
-/wrangler.jsonc
-/wrangler.toml
 /.wrangler/
 # misc
 .DS_Store
