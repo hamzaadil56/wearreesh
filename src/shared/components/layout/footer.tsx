@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -25,45 +23,25 @@ export function Footer() {
 			icon: Facebook,
 		},
 		{
-			name: "Twitter",
-			href: "https://twitter.com/wearreesh",
-			icon: Twitter,
-		},
-		{
 			name: "Instagram",
 			href: "https://instagram.com/wearreesh",
 			icon: Instagram,
-		},
-		{
-			name: "LinkedIn",
-			href: "https://linkedin.com/company/wearreesh",
-			icon: Linkedin,
 		},
 	];
 
 	const quickLinks = [
 		{ name: "Home", href: "/" },
-		{ name: "Shop", href: "/shop" },
 		{ name: "Products", href: "/products" },
 		{ name: "About", href: "/about" },
 		{ name: "Contact", href: "/contact" },
 	];
 
 	const customerService = [
-		{ name: "Shipping Info", href: "/shipping" },
 		{ name: "Returns", href: "/returns" },
 		{ name: "Size Guide", href: "/size-guide" },
-		{ name: "FAQ", href: "/faq" },
-		{ name: "Track Order", href: "/track-order" },
 	];
 
-	const company = [
-		{ name: "About Us", href: "/about" },
-		{ name: "Careers", href: "/careers" },
-		{ name: "Press", href: "/press" },
-		{ name: "Sustainability", href: "/sustainability" },
-		{ name: "Partnerships", href: "/partnerships" },
-	];
+	const company = [{ name: "About Us", href: "/about" }];
 
 	return (
 		<footer className="bg-gradient-to-br from-muted/50 via-background to-muted/30 border-t border-border/50">
@@ -74,16 +52,32 @@ export function Footer() {
 					<div className="lg:col-span-1 space-y-6">
 						<div className="space-y-4">
 							{/* Logo */}
-							<div className="flex items-center space-x-3">
-								<div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-									<span className="text-primary-foreground font-bold text-xl">
-										W
-									</span>
-								</div>
+							<Link
+								href="/"
+								className="flex items-center space-x-3"
+							>
+								{/* Light mode logo */}
+								<Image
+									src="/black_symbol.svg"
+									alt="Wearreesh Logo"
+									width={120}
+									height={32}
+									className="h-20 w-auto dark:hidden"
+									priority
+								/>
+								{/* Dark mode logo */}
+								<Image
+									src="/white_symbol.svg"
+									alt="Wearreesh Logo"
+									width={120}
+									height={32}
+									className="h-20 w-auto hidden dark:block "
+									priority
+								/>
 								<span className="text-2xl font-bold text-foreground">
-									Wearreesh
+									WearReesh
 								</span>
-							</div>
+							</Link>
 
 							<p className="text-muted-foreground leading-relaxed max-w-sm">
 								Discover premium outdoor gear and apparel
@@ -134,14 +128,6 @@ export function Footer() {
 									<Phone className="h-4 w-4 text-primary" />
 									<span className="text-sm">
 										+1 (555) 123-4567
-									</span>
-								</div>
-								<div className="flex items-start space-x-3 text-muted-foreground">
-									<MapPin className="h-4 w-4 text-primary mt-0.5" />
-									<span className="text-sm">
-										123 Adventure Street
-										<br />
-										Outdoor City, OC 12345
 									</span>
 								</div>
 							</div>

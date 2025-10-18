@@ -51,7 +51,7 @@ export default async function Home() {
 			price: product.priceRange.minVariantPrice.amount,
 			currencyCode: product.priceRange.minVariantPrice.currencyCode,
 			shortDescription: product.description.slice(0, 100) + "...",
-			formattedPrice: `$${product.priceRange.minVariantPrice.amount}`,
+			formattedPrice: `PKR ${product.priceRange.minVariantPrice.amount}`,
 			availableForSale: product.availableForSale,
 			hasMultipleVariants: product.variants.length > 1,
 			tags: product.tags,

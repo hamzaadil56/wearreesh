@@ -63,7 +63,7 @@ export function Navbar() {
 						<Link href="/" className="flex items-center">
 							{/* Light mode logo */}
 							<Image
-								src="/logo.jpeg"
+								src="/main_logo.svg"
 								alt="Wearreesh Logo"
 								width={120}
 								height={32}
@@ -72,11 +72,11 @@ export function Navbar() {
 							/>
 							{/* Dark mode logo */}
 							<Image
-								src="/black_logo.jpeg"
+								src="/white_logo.svg"
 								alt="Wearreesh Logo"
 								width={120}
 								height={32}
-								className="h-20 w-auto hidden dark:block"
+								className="h-20 w-auto hidden dark:block "
 								priority
 							/>
 						</Link>

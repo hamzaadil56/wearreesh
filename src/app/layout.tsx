@@ -13,8 +13,8 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-	title: "Wearreesh",
-	description: "Wearreesh",
+	title: "WearReesh",
+	description: "WearReesh",
 };
 
 export default async function RootLayout({
