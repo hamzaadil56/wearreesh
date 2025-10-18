@@ -144,17 +144,14 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 	if (!product) return null;
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-4">
 			{/* Product Options */}
 			{product.options.length > 0 && (
-				<div className="space-y-6">
-					<h3 className="text-xl font-bold text-foreground mb-4">
-						Product Options
-					</h3>
+				<div className="space-y-4">
 					{product.options.map((option) => (
-						<div key={option.name} className="space-y-4">
+						<div key={option.name} className="space-y-3">
 							<div className="flex items-center justify-between">
-								<h4 className="text-lg font-semibold text-foreground">
+								<h4 className="text-base font-medium text-foreground">
 									{option.name}
 								</h4>
 								{selectedOptions[option.name] && (
@@ -164,7 +161,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 								)}
 							</div>
 
-							<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+							<div className="flex flex-wrap gap-2">
 								{option.values.map((value) => {
 									const isSelected =
 										selectedOptions[option.name] === value;
@@ -174,7 +171,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 											onClick={() =>
 												selectOption(option.name, value)
 											}
-											className={`relative group px-4 py-3 text-sm font-medium rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+											className={`relative group px-4 py-3 text-sm font-medium rounded-xl border-2 transition-all duration-300 hover:scale-105 min-w-24 ${
 												isSelected
 													? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25"
 													: "border-border/30 hover:border-primary/50 bg-card hover:bg-muted/50"
@@ -219,13 +216,9 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 			)}
 
 			{/* Quantity and Add to Cart */}
-			<div className="bg-gradient-to-br from-muted/20 to-muted/5 rounded-2xl p-6 border border-border/20 space-y-6">
-				<h3 className="text-xl font-bold text-foreground">
-					Add to Cart
-				</h3>
-
+			<div className="bg-gradient-to-br from-muted/20 to-muted/5 rounded-xl  border border-border/20 space-y-4">
 				{/* Quantity Selector */}
-				<div className="space-y-3">
+				<div className="space-y-2">
 					<div className="flex items-center justify-between">
 						<label
 							htmlFor="quantity"
@@ -346,10 +339,10 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 							: false) ||
 						quantity > availableInventory
 					}
-					className={`w-full h-14 text-lg font-bold transition-all duration-500 rounded-xl ${
+					className={`w-full h-12 text-base font-semibold transition-all duration-500 rounded-lg ${
 						isShaking ? "animate-shake" : ""
 					} ${addedToCart ? "bg-green-500 hover:bg-green-600" : ""}`}
-					size="lg"
+					size="default"
 				>
 					{isAddingToCart ? (
 						<div className="flex items-center space-x-3">
@@ -476,8 +469,8 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 				)}
 
 				{/* Additional features */}
-				<div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/20">
-					<button className="flex items-center justify-center space-x-2 py-3 px-4 rounded-xl border border-border/30 hover:border-primary/50 transition-all duration-200 hover:bg-muted/30">
+				<div className="grid grid-cols-2 gap-3 pt-3 border-t border-border/20">
+					<button className="flex items-center justify-center space-x-2 py-2 px-3 rounded-lg border border-border/30 hover:border-primary/50 transition-all duration-200 hover:bg-muted/30">
 						<svg
 							className="w-4 h-4"
 							fill="none"
@@ -491,12 +484,10 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 								d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
 							/>
 						</svg>
-						<span className="text-sm font-medium">
-							Add to Wishlist
-						</span>
+						<span className="text-sm font-medium">Wishlist</span>
 					</button>
 
-					<button className="flex items-center justify-center space-x-2 py-3 px-4 rounded-xl border border-border/30 hover:border-primary/50 transition-all duration-200 hover:bg-muted/30">
+					<button className="flex items-center justify-center space-x-2 py-2 px-3 rounded-lg border border-border/30 hover:border-primary/50 transition-all duration-200 hover:bg-muted/30">
 						<svg
 							className="w-4 h-4"
 							fill="none"

@@ -15,7 +15,7 @@ import { CartDrawer } from "@/shared/components/cart";
 import { Suspense } from "react";
 
 const navigationLinks = [
-	{ name: "Shop", href: "/shop" },
+	{ name: "Shop", href: "/products" },
 	{ name: "About Us", href: "/about" },
 ];
 
@@ -27,25 +27,25 @@ export function Navbar() {
 					{/* Left Section - Navigation Links (Desktop) */}
 					<div className="hidden md:flex items-center space-x-8">
 						{navigationLinks.map((link) => {
-							if (link.name === "Shop") {
-								return (
-									<ShopDrawer
-										key={link.name}
-										buttonText={link.name}
-										className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground hover:underline underline-offset-4"
-									>
-										<div className="mt-6 h-full overflow-y-auto">
-											<Suspense
-												fallback={
-													<CollectionsListSkeleton />
-												}
-											>
-												<CollectionsList />
-											</Suspense>
-										</div>
-									</ShopDrawer>
-								);
-							}
+							// if (link.name === "Shop") {
+							// 	return (
+							// 		<ShopDrawer
+							// 			key={link.name}
+							// 			buttonText={link.name}
+							// 			className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground hover:underline underline-offset-4"
+							// 		>
+							// 			<div className="mt-6 h-full overflow-y-auto">
+							// 				<Suspense
+							// 					fallback={
+							// 						<CollectionsListSkeleton />
+							// 					}
+							// 				>
+							// 					<CollectionsList />
+							// 				</Suspense>
+							// 			</div>
+							// 		</ShopDrawer>
+							// 	);
+							// }
 							return (
 								<Link
 									key={link.name}

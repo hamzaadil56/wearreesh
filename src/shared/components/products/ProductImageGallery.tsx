@@ -61,7 +61,7 @@ export default function ProductImageGallery({
 	}, []);
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4">
 			{/* Main Image */}
 			<div className="relative group">
 				<div
@@ -195,117 +195,48 @@ export default function ProductImageGallery({
 
 			{/* Thumbnail Images */}
 			{images.length > 1 && (
-				<div className="space-y-3">
-					<div className="flex items-center justify-between">
-						<h4 className="text-sm font-medium text-muted-foreground">
-							Product Images
-						</h4>
-						<div className="flex space-x-2">
-							<button
-								onClick={() => handleImageNavigation("prev")}
-								className="p-1.5 rounded-lg hover:bg-secondary/50 transition-colors duration-200"
-								disabled={selectedImageIndex === 0}
-							>
-								<svg
-									className="w-4 h-4"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M15 19l-7-7 7-7"
-									/>
-								</svg>
-							</button>
-							<button
-								onClick={() => handleImageNavigation("next")}
-								className="p-1.5 rounded-lg hover:bg-secondary/50 transition-colors duration-200"
-								disabled={
-									selectedImageIndex === images.length - 1
-								}
-							>
-								<svg
-									className="w-4 h-4"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M9 5l7 7-7 7"
-									/>
-								</svg>
-							</button>
-						</div>
-					</div>
+				<div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+					{images.map((image, index) => (
+						<button
+							key={index}
+							onClick={() => {
+								setSelectedImageIndex(index);
+								setIsImageLoaded(false);
+							}}
+							className={`aspect-square overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 ${
+								selectedImageIndex === index
+									? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg"
+									: "ring-1 ring-border/20 hover:ring-border/40 shadow-sm hover:shadow-md"
+							}`}
+						>
+							<Image
+								src={image.url}
+								alt={image.altText || productTitle}
+								width={120}
+								height={120}
+								className="h-full w-full object-cover object-center"
+							/>
 
-					<div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-						{images.map((image, index) => (
-							<button
-								key={index}
-								onClick={() => {
-									setSelectedImageIndex(index);
-									setIsImageLoaded(false);
-								}}
-								className={`aspect-square overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 ${
-									selectedImageIndex === index
-										? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg"
-										: "ring-1 ring-border/20 hover:ring-border/40 shadow-sm hover:shadow-md"
-								}`}
-							>
-								<Image
-									src={image.url}
-									alt={image.altText || productTitle}
-									width={120}
-									height={120}
-									className="h-full w-full object-cover object-center"
-								/>
-
-								{/* Selected indicator */}
-								{selectedImageIndex === index && (
-									<div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-										<div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-											<svg
-												className="w-3 h-3 text-primary-foreground"
-												fill="currentColor"
-												viewBox="0 0 20 20"
-											>
-												<path
-													fillRule="evenodd"
-													d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-													clipRule="evenodd"
-												/>
-											</svg>
-										</div>
+							{/* Selected indicator */}
+							{selectedImageIndex === index && (
+								<div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
+									<div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+										<svg
+											className="w-3 h-3 text-primary-foreground"
+											fill="currentColor"
+											viewBox="0 0 20 20"
+										>
+											<path
+												fillRule="evenodd"
+												d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+												clipRule="evenodd"
+											/>
+										</svg>
 									</div>
-								)}
-							</button>
-						))}
-					</div>
-				</div>
-			)}
-
-			{/* Image details */}
-			{displayImage && (
-				<div className="bg-muted/30 rounded-xl p-4 space-y-2">
-					<div className="flex items-center justify-between">
-						<span className="text-sm font-medium text-foreground">
-							Image Details
-						</span>
-						<button className="text-xs text-muted-foreground hover:text-foreground transition-colors duration-200">
-							View full size
+								</div>
+							)}
 						</button>
-					</div>
-					{displayImage.altText && (
-						<p className="text-sm text-muted-foreground">
-							{displayImage.altText}
-						</p>
-					)}
+					))}
 				</div>
 			)}
 		</div>

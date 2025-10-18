@@ -96,7 +96,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
 				{/* Quick view button on hover */}
 				<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-					<button className="bg-white/90 backdrop-blur-sm text-foreground px-3 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shadow-lg hover:bg-white transition-colors duration-200 hover:scale-105 transform">
+					<button className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-foreground px-3 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors duration-200 hover:scale-105 transform">
 						Quick View
 					</button>
 				</div>
