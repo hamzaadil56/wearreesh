@@ -311,6 +311,7 @@ export async function getCollectionProducts({
 			handle: collection,
 			reverse,
 			sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
+			first: 100,
 		},
 	});
 
