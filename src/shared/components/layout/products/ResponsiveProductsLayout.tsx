@@ -44,7 +44,7 @@ export function ResponsiveProductsLayout({
 					<div className="space-y-6">
 						{/* Header with Item Count and Sort */}
 						<div className="flex items-center justify-between">
-							<p className="text-sm text-gray-600">
+							<p className="text-sm text-muted-foreground">
 								{itemCount} Items
 							</p>
 							<SortDropdown />
@@ -111,7 +111,7 @@ export function ResponsiveProductsLayout({
 										<h3 className="font-medium text-base">
 											Sort By
 										</h3>
-										<div className="bg-gray-50 rounded-xl p-4">
+										<div className="bg-muted/50 rounded-xl p-4">
 											<SortDropdown />
 										</div>
 									</div>
@@ -121,7 +121,7 @@ export function ResponsiveProductsLayout({
 										<h3 className="font-medium text-base">
 											Filters
 										</h3>
-										<div className="bg-gray-50 rounded-xl p-4">
+										<div className="bg-muted/50 rounded-xl p-4">
 											<ProductsFilter
 												optionsData={optionsData}
 												className="bg-transparent border-none p-0 max-w-none"
@@ -132,10 +132,10 @@ export function ResponsiveProductsLayout({
 							</div>
 
 							{/* Footer with Apply Button */}
-							<div className="border-t pt-4 pb-6 px-4 bg-white">
+							<div className="border-t border-border pt-4 pb-6 px-4 bg-card">
 								<Button
 									onClick={() => setIsFilterOpen(false)}
-									className="w-full bg-black text-white hover:bg-gray-800 rounded-xl"
+									className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
 									size="lg"
 								>
 									Apply Filters

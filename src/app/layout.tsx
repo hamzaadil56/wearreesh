@@ -5,7 +5,7 @@ import { CartProvider } from "@/shared/components/cart";
 import { CartRepository } from "@/models/cart";
 import { Cart } from "@/shared/lib/shopify/types";
 import { cookies } from "next/headers";
-import { Navbar } from "@/shared/components/layout";
+import { Navbar, Footer } from "@/shared/components/layout";
 import "./globals.css";
 
 const merriweather = Merriweather({
@@ -13,8 +13,8 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-	title: "Wearreesh",
-	description: "Wearreesh",
+	title: "WearReesh",
+	description: "WearReesh",
 };
 
 export default async function RootLayout({
@@ -49,6 +49,7 @@ export default async function RootLayout({
 					<CartProvider initialCart={initialCart}>
 						<Navbar />
 						<main className="flex-1">{children}</main>
+						<Footer />
 					</CartProvider>
 				</ThemeProvider>
 			</body>

@@ -12,9 +12,11 @@ export function AvailabilityFilter({
 					type="checkbox"
 					checked={availableOnly}
 					onChange={(e) => onChange(e.target.checked)}
-					className="rounded border-gray-300 text-black focus:ring-black"
+					className="rounded border-border text-foreground focus:ring-ring"
 				/>
-				<span className="text-sm text-gray-700">Available only</span>
+				<span className="text-sm text-muted-foreground">
+					Available only
+				</span>
 			</label>
 		</div>
 	);

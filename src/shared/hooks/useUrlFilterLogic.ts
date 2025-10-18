@@ -31,18 +31,45 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 		const newFilters: FilterState = {};
 		let newAvailableOnly = false;
 
-		// Split by '+' to get individual filter parts
-		const filterParts = qParam.split("+");
+		// Split by ' AND ' to get individual filter groups
+		const filterGroups = qParam.split(" AND ");
 
-		filterParts.forEach((part) => {
-			if (part === "available:true") {
+		filterGroups.forEach((group) => {
+			const trimmedGroup = group.trim();
+
+			if (trimmedGroup === "available:true") {
 				newAvailableOnly = true;
-			} else if (part.startsWith("variant_option:")) {
-				// Parse variant_option:OptionName:Value format
-				const match = part.match(/^variant_option:([^:]+):(.+)$/);
+			} else if (
+				trimmedGroup.startsWith("(") &&
+				trimmedGroup.endsWith(")")
+			) {
+				// Handle grouped OR filters: (variant_option:Color:Pink OR variant_option:Color:Red)
+				const innerContent = trimmedGroup.slice(1, -1);
+				const orParts = innerContent.split(" OR ");
+
+				orParts.forEach((part) => {
+					const match = part
+						.trim()
+						.match(/^variant_option:([^:]+):(.+)$/);
+					if (match) {
+						const [, optionName, value] = match;
+						const cleanValue = value.replace(/^"(.*)"$/, "$1");
+
+						if (!newFilters[optionName]) {
+							newFilters[optionName] = [];
+						}
+						if (!newFilters[optionName].includes(cleanValue)) {
+							newFilters[optionName].push(cleanValue);
+						}
+					}
+				});
+			} else if (trimmedGroup.startsWith("variant_option:")) {
+				// Handle single variant_option filter
+				const match = trimmedGroup.match(
+					/^variant_option:([^:]+):(.+)$/
+				);
 				if (match) {
 					const [, optionName, value] = match;
-					// Remove quotes if present
 					const cleanValue = value.replace(/^"(.*)"$/, "$1");
 
 					if (!newFilters[optionName]) {
@@ -70,19 +97,31 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 			}
 
 			// Add variant option filters
+			// For multiple values within the same option, use OR and wrap in parentheses
+			// For different options, use AND to join them
 			Object.entries(newFilters).forEach(([optionName, values]) => {
-				values.forEach((value) => {
-					// Add quotes around values that contain spaces
-					const formattedValue = value.includes(" ")
-						? `"${value}"`
-						: value;
+				if (values.length === 1) {
+					// Single value for this option
+					const formattedValue = values[0].includes(" ")
+						? `"${values[0]}"`
+						: values[0];
 					queryParts.push(
 						`variant_option:${optionName}:${formattedValue}`
 					);
-				});
+				} else if (values.length > 1) {
+					// Multiple values for same option - use OR within parentheses
+					const orParts = values.map((value) => {
+						const formattedValue = value.includes(" ")
+							? `"${value}"`
+							: value;
+						return `variant_option:${optionName}:${formattedValue}`;
+					});
+					queryParts.push(`(${orParts.join(" OR ")})`);
+				}
 			});
 
-			return queryParts.length > 0 ? queryParts.join("+") : "";
+			// Join different filter groups with AND
+			return queryParts.length > 0 ? queryParts.join(" AND ") : "";
 		},
 		[]
 	);
