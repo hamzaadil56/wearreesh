@@ -4,7 +4,6 @@ import { User, ShoppingCart } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { ModeToggle } from "@/shared/components/mode-toggle";
-import { SearchInput } from "./search-input";
 import { MobileMenu } from "./mobile-menu";
 import { ShopDrawer } from "./shop-drawer";
 import { SearchDrawer } from "./search-drawer";
@@ -85,7 +84,7 @@ export function Navbar() {
 					{/* Right Section - Search, User, Cart (Desktop) */}
 					<div className="hidden md:flex items-center space-x-4 ml-auto">
 						{/* Search - Client Component */}
-						<SearchInput placeholder="Search..." className="w-64" />
+						<SearchDrawer />
 
 						{/* User Account - Server Component */}
 						<Button variant="ghost" size="icon" asChild>
