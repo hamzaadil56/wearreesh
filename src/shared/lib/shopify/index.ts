@@ -437,7 +437,6 @@ export async function getProducts({
 			reverse,
 			sortKey,
 		},
-		cache: "force-cache",
 	});
 
 	return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
