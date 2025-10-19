@@ -4,6 +4,8 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { mapToViewModel } from "@/shared/lib/utils";
 import ProductsView from "@/views/products/ProductsView";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default async function ProductsPage(props: {
 	searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {

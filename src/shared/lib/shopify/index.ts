@@ -290,6 +290,7 @@ export async function getCollection(
 		variables: {
 			handle,
 		},
+		cache: "force-cache",
 	});
 
 	return reshapeCollection(res.body.data.collection);
@@ -313,6 +314,7 @@ export async function getCollectionProducts({
 			sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
 			first: 100,
 		},
+		cache: "force-cache",
 	});
 
 	if (!res.body.data.collection) {
@@ -435,6 +437,7 @@ export async function getProducts({
 			reverse,
 			sortKey,
 		},
+		cache: "force-cache",
 	});
 
 	return reshapeProducts(removeEdgesAndNodes(res.body.data.products));

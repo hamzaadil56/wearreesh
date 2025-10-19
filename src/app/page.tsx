@@ -5,6 +5,8 @@ import { getCollection, getCollectionProducts } from "@/shared/lib/shopify";
 import { ProductCard } from "@/shared/components/cards/ProductCard";
 import { ProductViewModel } from "@/shared/types/viewModels";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export default async function Home() {
 	// Fetch the frontpage collection for hero image
 	const heroCollection = await getCollection("frontpage");
