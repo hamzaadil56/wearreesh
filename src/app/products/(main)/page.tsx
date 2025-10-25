@@ -11,26 +11,36 @@ export default async function ProductsPage(props: {
 }) {
 	const searchParams = await props.searchParams;
 	const { q: searchValue } = searchParams as { [key: string]: string };
+	console.log("searchValue", searchValue);
 
 	try {
-		// Optionally fetch initial data on the server for better SEO and initial load
+		// Fetch initial data and options data on the server
 		const repository = new ProductRepository();
+
+		// Fetch products
 		const initialData = await repository.search({
 			pagination: {
 				page: 1,
-				limit: 20,
+				limit: 100, // Fetch more products for client-side filtering
 				sortBy: "TITLE",
 				sortOrder: "asc",
 			},
 			query: searchValue,
 		});
 
+		// Fetch options data for filtering
+		const optionsResult = await repository.getProductsOptions();
+		const optionsData = optionsResult.options || [];
+
 		// Map to view models for initial hydration
 		const initialProducts = initialData.items.map(mapToViewModel);
 
 		return (
 			<Suspense fallback={<ProductsLoadingView />}>
-				<ProductsView products={initialProducts} />
+				<ProductsView
+					products={initialProducts}
+					optionsData={optionsData}
+				/>
 			</Suspense>
 		);
 	} catch (error) {

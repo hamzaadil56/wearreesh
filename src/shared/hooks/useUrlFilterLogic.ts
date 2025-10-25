@@ -40,10 +40,35 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 			if (trimmedGroup === "available:true") {
 				newAvailableOnly = true;
 			} else if (
+				trimmedGroup.startsWith("variant_option:") &&
+				trimmedGroup.includes(" OR ")
+			) {
+				// Handle OR filters with single prefix: variant_option:Color:Pink OR Brown
+				const match = trimmedGroup.match(
+					/^variant_option:([^:]+):(.+)$/
+				);
+				if (match) {
+					const [, optionName, valuesString] = match;
+					// Split the values part by OR
+					const values = valuesString
+						.split(" OR ")
+						.map((v) => v.trim());
+
+					if (!newFilters[optionName]) {
+						newFilters[optionName] = [];
+					}
+
+					values.forEach((value) => {
+						if (!newFilters[optionName].includes(value)) {
+							newFilters[optionName].push(value);
+						}
+					});
+				}
+			} else if (
 				trimmedGroup.startsWith("(") &&
 				trimmedGroup.endsWith(")")
 			) {
-				// Handle grouped OR filters: (variant_option:Color:Pink OR variant_option:Color:Red)
+				// Handle legacy grouped OR filters: (variant_option:Color:Pink OR variant_option:Color:Red)
 				const innerContent = trimmedGroup.slice(1, -1);
 				const orParts = innerContent.split(" OR ");
 
@@ -53,7 +78,8 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 						.match(/^variant_option:([^:]+):(.+)$/);
 					if (match) {
 						const [, optionName, value] = match;
-						const cleanValue = value.replace(/^"(.*)"$/, "$1");
+						// Use value as-is (no quote removal needed)
+						const cleanValue = value.trim();
 
 						if (!newFilters[optionName]) {
 							newFilters[optionName] = [];
@@ -70,7 +96,8 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 				);
 				if (match) {
 					const [, optionName, value] = match;
-					const cleanValue = value.replace(/^"(.*)"$/, "$1");
+					// Use value as-is (no quote removal needed)
+					const cleanValue = value.trim();
 
 					if (!newFilters[optionName]) {
 						newFilters[optionName] = [];
@@ -97,26 +124,18 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 			}
 
 			// Add variant option filters
-			// For multiple values within the same option, use OR and wrap in parentheses
+			// For multiple values within the same option, use OR without parentheses
 			// For different options, use AND to join them
 			Object.entries(newFilters).forEach(([optionName, values]) => {
 				if (values.length === 1) {
-					// Single value for this option
-					const formattedValue = values[0].includes(" ")
-						? `"${values[0]}"`
-						: values[0];
+					// Single value for this option - no quotes needed for simple values
 					queryParts.push(
-						`variant_option:${optionName}:${formattedValue}`
+						`variant_option:${optionName}:${values[0]}`
 					);
 				} else if (values.length > 1) {
-					// Multiple values for same option - use OR within parentheses
-					const orParts = values.map((value) => {
-						const formattedValue = value.includes(" ")
-							? `"${value}"`
-							: value;
-						return `variant_option:${optionName}:${formattedValue}`;
-					});
-					queryParts.push(`(${orParts.join(" OR ")})`);
+					// Multiple values for same option - use OR with single variant_option prefix
+					const orValues = values.join(" OR ");
+					queryParts.push(`variant_option:${optionName}:${orValues}`);
 				}
 			});
 
