@@ -2,16 +2,34 @@ import { Suspense } from "react";
 import { ProductRepository } from "@/models/product/ProductRepository";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { mapToViewModel } from "@/shared/lib/utils";
+import { resolveProductSortParams } from "@/shared/constants/productSort";
 import ProductsView from "@/views/products/ProductsView";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
+type PageSearchParams = {
+	[key: string]: string | string[] | undefined;
+};
+
 export default async function ProductsPage(props: {
-	searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+	searchParams?: Promise<PageSearchParams>;
 }) {
-	const searchParams = await props.searchParams;
-	const { q: searchValue } = searchParams as { [key: string]: string };
-	console.log("searchValue", searchValue);
+	const searchParams = ((await props.searchParams) ?? {}) as PageSearchParams;
+
+	const rawQuery = searchParams.q;
+	const rawSort = searchParams.sort;
+
+	const searchValue = Array.isArray(rawQuery)
+		? rawQuery[0]
+		: rawQuery ?? undefined;
+	const sortValue = Array.isArray(rawSort)
+		? rawSort[0]
+		: rawSort ?? undefined;
+
+	const { sortKey, sortOrder } = resolveProductSortParams({
+		value: sortValue,
+		hasQuery: Boolean(searchValue && searchValue.trim().length > 0),
+	});
 
 	try {
 		// Fetch initial data and options data on the server
@@ -22,8 +40,8 @@ export default async function ProductsPage(props: {
 			pagination: {
 				page: 1,
 				limit: 100, // Fetch more products for client-side filtering
-				sortBy: "TITLE",
-				sortOrder: "asc",
+				sortBy: sortKey,
+				sortOrder,
 			},
 			query: searchValue,
 		});

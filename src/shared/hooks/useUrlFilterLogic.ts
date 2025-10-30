@@ -149,12 +149,19 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 	const updateUrl = useCallback(
 		(newFilters: FilterState, newAvailableOnly: boolean) => {
 			const queryString = buildQueryString(newFilters, newAvailableOnly);
-			const url = queryString
-				? `${pathname}?q=${encodeURIComponent(queryString)}`
-				: pathname;
-			router.push(url); // Use replace instead of push
+			const params = new URLSearchParams(searchParams.toString());
+
+			if (queryString) {
+				params.set("q", queryString);
+			} else {
+				params.delete("q");
+			}
+
+			const query = params.toString();
+			const url = query ? `${pathname}?${query}` : pathname;
+			router.replace(url, { scroll: false });
 		},
-		[router, pathname, buildQueryString]
+		[buildQueryString, pathname, router, searchParams]
 	);
 
 	// Options data is now passed as a prop
@@ -196,7 +203,7 @@ export function useUrlFilterLogic({ optionsData }: UseUrlFilterLogicProps) {
 
 	// Clear all filters
 	const clearAllFilters = useCallback(() => {
-		const newFilters = {};
+		const newFilters: FilterState = {};
 		const newAvailableOnly = false;
 		setFilters(newFilters);
 		setAvailableOnly(newAvailableOnly);

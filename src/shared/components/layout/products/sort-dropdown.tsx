@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,31 +9,65 @@ import {
 	DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-
-const SORT_OPTIONS = [
-	"Relevance",
-	"Price: Low to High",
-	"Price: High to Low",
-	"Newest",
-	"Best Selling",
-];
+import {
+	DEFAULT_PRODUCT_SORT_OPTION,
+	PRODUCT_SORT_OPTIONS,
+	ProductSortOption,
+	getProductSortOption,
+} from "@/shared/constants/productSort";
 
 export function SortDropdown() {
-	const [sortBy, setSortBy] = useState<string>("");
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+
+	const selectedOption = useMemo(() => {
+		return getProductSortOption(searchParams.get("sort") || undefined);
+	}, [searchParams]);
+
+	const handleSelect = useCallback(
+		(option: ProductSortOption) => {
+			if (option.value === selectedOption.value) {
+				return;
+			}
+
+			const params = new URLSearchParams(searchParams.toString());
+
+			if (option.value === DEFAULT_PRODUCT_SORT_OPTION.value) {
+				params.delete("sort");
+			} else {
+				params.set("sort", option.value);
+			}
+
+			const queryString = params.toString();
+			router.replace(
+				queryString ? `${pathname}?${queryString}` : pathname,
+				{
+					scroll: false,
+				}
+			);
+		},
+		[pathname, router, searchParams, selectedOption.value]
+	);
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
-				{sortBy ? sortBy : "Sort By"}
+				{selectedOption.label}
 				<ChevronDown className="w-4 h-4" />
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
-				{SORT_OPTIONS.map((option) => (
+				{PRODUCT_SORT_OPTIONS.map((option) => (
 					<DropdownMenuItem
-						key={option}
-						onClick={() => setSortBy(option)}
+						key={option.value}
+						onClick={() => handleSelect(option)}
+						className={
+							selectedOption.value === option.value
+								? "font-medium text-foreground"
+								: ""
+						}
 					>
-						{option}
+						{option.label}
 					</DropdownMenuItem>
 				))}
 			</DropdownMenuContent>
