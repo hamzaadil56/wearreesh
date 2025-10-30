@@ -12,11 +12,7 @@ import { CollectionsListSkeleton } from "./collections-list";
 import { CartButtonClient } from "./cart-button-client";
 import { CartDrawer } from "@/shared/components/cart";
 import { Suspense } from "react";
-
-const navigationLinks = [
-	{ name: "Shop", href: "/products" },
-	{ name: "About Us", href: "/about" },
-];
+import { navigationLinks } from "@/shared/constants/routes";
 
 export function Navbar() {
 	return (

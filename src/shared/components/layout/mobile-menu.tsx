@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Menu, X, User } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 
 import { Button } from "@/shared/components/ui/button";
@@ -13,11 +14,8 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/shared/components/ui/drawer";
-
-const bottomNavigationLinks = [
-	{ name: "About Us", href: "/about" },
-	{ name: "Contact Us", href: "/contact" },
-];
+import { navigationLinks } from "@/shared/constants/routes";
+import { socialMediaLinks } from "@/shared/constants/routes";
 
 export function MobileMenu({
 	CollectionLists,
@@ -69,37 +67,66 @@ export function MobileMenu({
 				</div>
 
 				{/* Navigation Content */}
-				<div className="flex-1 overflow-y-auto pt-8 px-6 pb-6">
-					{/* Collections Section */}
-					<div className="mb-8">{CollectionLists}</div>
+				<div className="flex-1 flex flex-col px-6 pb-6">
+					{/* Collections Section - temporarily disabled */}
+					{/* <div className="mb-8">{CollectionLists}</div> */}
 
-					{/* Horizontal Divider */}
-					<div className="border-t border-border mb-8" />
+					{/* Main Navigation Links */}
+					<div className="flex-1 pt-8">
+						{navigationLinks.map((link, index) => (
+							<React.Fragment key={link.name}>
+								<DrawerClose asChild>
+									<Link
+										href={link.href}
+										className="block py-4 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
+									>
+										{link.name}
+									</Link>
+								</DrawerClose>
+								{/* Divider between links (not after the last one) */}
+								{index < navigationLinks.length - 1 && (
+									<div className="border-t border-border" />
+								)}
+							</React.Fragment>
+						))}
+					</div>
 
-					{/* Bottom Section - Profile & Navigation */}
-					<div className="space-y-4">
-						{/* Profile Button */}
-						<DrawerClose asChild>
-							<Link
-								href="/account"
-								className="flex items-center space-x-3 py-3 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
-							>
-								<User className="h-5 w-5" />
-								<span>Profile</span>
-							</Link>
-						</DrawerClose>
+					{/* Bottom Section - Account & Social Media */}
+					<div className="mt-auto">
+						{/* Divider before bottom section */}
+						<div className="border-t border-border mb-6" />
 
-						{/* Navigation Links */}
-						{bottomNavigationLinks.map((link) => (
-							<DrawerClose key={link.name} asChild>
+						{/* Account and Social Media in same row */}
+						<div className="flex items-center justify-between px-2">
+							{/* Account Section */}
+							<DrawerClose asChild>
 								<Link
-									href={link.href}
-									className="block py-3 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
+									href="/account"
+									className="flex items-center space-x-3 py-4 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
 								>
-									{link.name}
+									<User className="h-5 w-5" />
+									<span>My Account</span>
 								</Link>
 							</DrawerClose>
-						))}
+
+							{/* Social Media Icons */}
+							<div className="flex space-x-3">
+								{socialMediaLinks.map((social) => {
+									const IconComponent = social.icon;
+									return (
+										<DrawerClose key={social.name} asChild>
+											<Link
+												href={social.href}
+												className="flex items-center justify-center w-10 h-10 rounded-full bg-foreground/5 hover:bg-foreground/10 transition-colors"
+												aria-label={social.name}
+											>
+												<IconComponent className="h-5 w-5 text-foreground/70" />
+											</Link>
+										</DrawerClose>
+									);
+								})}
+							</div>
+						</div>
 					</div>
 				</div>
 			</DrawerContent>
