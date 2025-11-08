@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { getCollection, getCollectionProducts } from "@/shared/lib/shopify";
 import { ProductCard } from "@/shared/components/cards/ProductCard";
 import { ProductViewModel } from "@/shared/types/viewModels";
-
+import Image from "next/image";
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
@@ -63,14 +63,17 @@ export default async function Home() {
 		<div className="flex flex-col min-h-screen">
 			{/* Hero Section with Collection Image Background */}
 			<section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-				{/* Background Image */}
+				{/* Background Image - Optimized with Next.js Image */}
 				{heroCollection?.image && (
 					<div className="absolute inset-0 z-0">
-						<div
-							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-							style={{
-								backgroundImage: `url(${heroCollection.image.url})`,
-							}}
+						<Image
+							src={heroCollection.image.url}
+							alt="Hero Background"
+							fill
+							priority
+							quality={75}
+							className="object-cover"
+							sizes="100vw"
 						/>
 					</div>
 				)}
@@ -98,7 +101,7 @@ export default async function Home() {
 							<Button
 								size="lg"
 								asChild
-								className="text-lg px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 backdrop-blur-sm shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-primary-foreground/20"
+								className="text-lg px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 md:backdrop-blur-sm shadow-2xl md:hover:scale-105 transition-all duration-300 border-2 border-primary-foreground/20"
 							>
 								<Link href="/products">
 									Shop Now
@@ -109,9 +112,9 @@ export default async function Home() {
 					</div>
 				</div>
 
-				{/* Scroll indicator */}
-				<div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-					<div className="w-6 h-10 border-2 border-white rounded-full flex justify-center bg-black/20 backdrop-blur-sm">
+				{/* Scroll indicator - Only show on desktop */}
+				<div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+					<div className="w-6 h-10 border-2 border-white rounded-full flex justify-center bg-black/20">
 						<div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
 					</div>
 				</div>

@@ -6,6 +6,20 @@ export const optionFragment = /* GraphQL */ `
 		optionValues {
 			id
 			name
+			swatch {
+				color
+				image {
+					id
+					alt
+					mediaContentType
+					previewImage {
+						altText
+						url
+						height
+						id
+					}
+				}
+			}
 		}
 	}
 `;

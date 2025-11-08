@@ -32,11 +32,13 @@ export function ProductCard({ product }: ProductCardProps) {
 	return (
 		<Link
 			href={`/products/${product.handle}`}
-			className="group relative bg-gradient-to-br from-card to-card/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-border/50 hover:border-primary/30 hover:-translate-y-1 hover:scale-[1.02] product-card-animate"
+			className="group relative bg-gradient-to-br from-card to-card/80 rounded-2xl shadow-lg transition-shadow duration-300 overflow-hidden border border-border/50 
+			md:hover:shadow-2xl md:hover:border-primary/30 md:hover:-translate-y-1 md:hover:scale-[1.02] 
+			product-card-animate"
 		>
-			{/* Discount Badge */}
+			{/* Discount Badge - Remove animate-pulse on mobile */}
 			{discountPercentage && discountPercentage > 0 && (
-				<div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[9px] sm:text-xs font-bold px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-full shadow-lg animate-pulse">
+				<div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[9px] sm:text-xs font-bold px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-full shadow-lg md:animate-pulse">
 					-{discountPercentage}%
 				</div>
 			)}
@@ -59,18 +61,19 @@ export function ProductCard({ product }: ProductCardProps) {
 					height={500}
 					src={product.imageUrl}
 					alt={product.imageAlt}
-					className={`h-full w-full object-cover group-hover:scale-110 transition-all duration-700 ease-out ${
+					loading="lazy"
+					className={`h-full w-full object-cover md:group-hover:scale-110 transition-transform duration-700 ease-out ${
 						isImageLoaded ? "opacity-100" : "opacity-0"
 					}`}
 					onLoad={() => setIsImageLoaded(true)}
 				/>
 
-				{/* Gradient overlay on hover */}
-				<div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+				{/* Gradient overlay on hover - only on desktop */}
+				<div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
 
 				{/* Out of Stock Overlay */}
 				{!product.availableForSale && (
-					<div className="absolute inset-0 bg-black/70 flex items-center justify-center backdrop-blur-sm">
+					<div className="absolute inset-0 bg-black/70 flex items-center justify-center md:backdrop-blur-sm">
 						<div className="text-center">
 							<div className="w-16 h-16 mx-auto mb-3 rounded-full bg-white/20 flex items-center justify-center">
 								<svg
@@ -94,9 +97,9 @@ export function ProductCard({ product }: ProductCardProps) {
 					</div>
 				)}
 
-				{/* Quick view button on hover */}
-				<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-					<button className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-foreground px-3 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors duration-200 hover:scale-105 transform">
+				{/* Quick view button on hover - only show on desktop */}
+				<div className="hidden md:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+					<button className="bg-white/90 dark:bg-zinc-900/90 text-foreground px-6 py-2.5 rounded-full text-sm font-medium shadow-lg hover:bg-white dark:hover:bg-zinc-900 transition-colors duration-200 hover:scale-105 transform">
 						Quick View
 					</button>
 				</div>

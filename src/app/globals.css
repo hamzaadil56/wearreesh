@@ -179,12 +179,17 @@
 		transform: translateY(0px);
 	}
 	50% {
-		transform: translateY(-10px);
+		transform: translateY(
+			-5px
+		); /* Reduced from -10px for better performance */
 	}
 }
 
-.product-card-animate:hover {
-	animation: float 0.6s ease-in-out;
+/* Only trigger on desktop for better mobile performance */
+@media (min-width: 768px) {
+	.product-card-animate:hover {
+		animation: float 0.4s ease-in-out; /* Reduced from 0.6s */
+	}
 }
 
 /* Shimmer loading effect */
@@ -508,4 +513,91 @@
 
 .animate-slide-in-right {
 	animation: slideInFromRight 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ========================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+/* Mobile Performance Optimizations - Prevent blank screen during fast scrolling */
+@media (max-width: 768px) {
+	/* Disable expensive animations on mobile */
+	.animate-fade-in,
+	.animate-fade-in-delay-1,
+	.animate-fade-in-delay-2,
+	.animate-fade-in-delay-3,
+	.animate-slide-up,
+	.animate-reveal,
+	.animate-slide-in-left,
+	.animate-slide-in-right,
+	.stagger-animation > * {
+		animation: none !important;
+		opacity: 1;
+		transform: none;
+	}
+
+	/* Disable hover animations on mobile */
+	.product-card-animate:hover,
+	.hover-scale:hover,
+	.magnetic-hover:hover {
+		animation: none;
+		transform: none;
+	}
+
+	/* Simplify continuous animations on mobile */
+	.animate-pulse,
+	.shimmer,
+	.animate-gradient,
+	.animate-glow,
+	.animate-pulse-glow,
+	.animate-morph-border {
+		animation-duration: 2s; /* Slower = less CPU */
+	}
+
+	/* Disable backdrop blur on mobile for better performance */
+	.backdrop-blur-sm,
+	.backdrop-blur {
+		backdrop-filter: none !important;
+		-webkit-backdrop-filter: none !important;
+	}
+
+	/* Reduce shadow complexity on mobile */
+	.shadow-2xl {
+		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+	}
+
+	/* Disable bounce animation on mobile */
+	.animate-bounce {
+		animation: none;
+	}
+}
+
+/* GPU acceleration for transforms - Prevents blank screen during scroll */
+.product-card-animate,
+.hover-scale,
+.magnetic-hover {
+	will-change: transform;
+	transform: translateZ(0); /* Force GPU layer */
+}
+
+/* Optimize scrolling performance */
+body {
+	-webkit-overflow-scrolling: touch;
+	scroll-behavior: smooth;
+}
+
+/* Prevent layout shift during image loads */
+img {
+	content-visibility: auto;
+}
+
+/* Optimize rendering for product grids - Better scroll performance */
+[data-products-grid] > * {
+	content-visibility: auto;
+	contain-intrinsic-size: 0 400px; /* Approximate card height */
+}
+
+/* Optimize large sections - Reduce rendering during scroll */
+section {
+	content-visibility: auto;
 }

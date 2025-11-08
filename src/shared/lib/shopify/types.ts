@@ -68,10 +68,27 @@ export type Product = Omit<ShopifyProduct, "variants" | "images"> & {
 	images: Image[];
 };
 
+export type ProductOptionSwatch = {
+	color?: string | null;
+	image?: {
+		url: string;
+		altText: string;
+		width: number;
+		height: number;
+	} | null;
+};
+
+export type ProductOptionValue = {
+	id: string;
+	name: string;
+	swatch?: ProductOptionSwatch | null;
+};
+
 export type ProductOption = {
 	id: string;
 	name: string;
 	values: string[];
+	optionValues?: ProductOptionValue[];
 };
 
 export interface ProductVariant {

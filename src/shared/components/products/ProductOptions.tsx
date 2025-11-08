@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type CSSProperties } from "react";
 import { Button } from "@/shared/components/ui/button";
 import type { ProductOptionsProps } from "@/shared/types/props";
 import { useProductViewModel } from "@/viewmodels/products/useProductViewModel";
@@ -165,16 +165,93 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 								{option.values.map((value) => {
 									const isSelected =
 										selectedOptions[option.name] === value;
+									const isColorOption =
+										option.name.toLowerCase().trim() ===
+										"color";
+
+									if (isColorOption) {
+										const optionValue =
+											option.optionValues?.find(
+												(optionValue) =>
+													optionValue.name === value
+											);
+
+										const swatchColor =
+											optionValue?.swatch?.color || "";
+										const swatchImage =
+											optionValue?.swatch?.image?.url ||
+											"";
+
+										const swatchStyles: CSSProperties = {
+											borderRadius: "9999px",
+										};
+
+										if (swatchColor) {
+											swatchStyles.backgroundColor =
+												swatchColor;
+										}
+
+										if (swatchImage) {
+											swatchStyles.backgroundImage = `url(${swatchImage})`;
+											swatchStyles.backgroundSize =
+												"cover";
+											swatchStyles.backgroundPosition =
+												"center";
+										}
+
+										return (
+											<button
+												key={value}
+												type="button"
+												onClick={() =>
+													selectOption(
+														option.name,
+														value
+													)
+												}
+												className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+													isSelected
+														? "border-primary scale-110 shadow-xl shadow-primary/20"
+														: "border-border/30 hover:border-primary/50"
+												}`}
+												aria-label={`${option.name}: ${value}`}
+												title={value}
+											>
+												<span className="sr-only">
+													{value}
+												</span>
+												<span
+													className={`absolute inset-1 rounded-full ${
+														!swatchColor &&
+														!swatchImage
+															? "bg-muted text-xs font-medium text-foreground flex items-center justify-center"
+															: ""
+													}`}
+													style={swatchStyles}
+												>
+													{!swatchColor &&
+														!swatchImage && (
+															<span>{value}</span>
+														)}
+												</span>
+												{isSelected && (
+													<span className="pointer-events-none absolute inset-0 rounded-full border-4 border-primary/30" />
+												)}
+											</button>
+										);
+									}
+
 									return (
 										<button
 											key={value}
+											type="button"
 											onClick={() =>
 												selectOption(option.name, value)
 											}
-											className={`relative group px-4 py-3 text-sm font-medium rounded-xl border-2 transition-all duration-300 hover:scale-105 min-w-24 ${
+											className={`relative group min-w-24 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 ${
 												isSelected
 													? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-													: "border-border/30 hover:border-primary/50 bg-card hover:bg-muted/50"
+													: "border-border/30 bg-card hover:border-primary/50 hover:bg-muted/50"
 											}`}
 										>
 											<span className="relative z-10">
@@ -183,9 +260,9 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 											{/* Selection indicator */}
 											{isSelected && (
-												<div className="absolute top-2 right-2 w-4 h-4 bg-primary-foreground rounded-full flex items-center justify-center">
+												<div className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground">
 													<svg
-														className="w-2.5 h-2.5 text-primary"
+														className="h-2.5 w-2.5 text-primary"
 														fill="currentColor"
 														viewBox="0 0 20 20"
 													>
@@ -200,7 +277,7 @@ export default function ProductOptions({ viewModel }: ProductOptionsProps) {
 
 											{/* Hover effect */}
 											<div
-												className={`absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+												className={`absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
 													isSelected
 														? "bg-white/10"
 														: "bg-primary/5"

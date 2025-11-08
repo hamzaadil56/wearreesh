@@ -12,11 +12,11 @@ interface ProductPageProps {
 	};
 }
 
-export async function getProductData({
-	params,
-}: ProductPageProps): Promise<ProductViewModel | null> {
+export async function getProductData(
+	handle: string
+): Promise<ProductViewModel | null> {
 	const repository = new ProductRepository();
-	const product = await repository.findByHandle(params.handle);
+	const product = await repository.findByHandle(handle);
 
 	if (!product) {
 		return null;
@@ -27,7 +27,8 @@ export async function getProductData({
 
 export default async function ProductPage({ params }: ProductPageProps) {
 	try {
-		const product = await getProductData({ params });
+		const { handle } = await params;
+		const product = await getProductData(handle);
 		if (!product) {
 			notFound();
 		}
