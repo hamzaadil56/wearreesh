@@ -69,18 +69,25 @@ export function useCustomerViewModel(): UseCustomerViewModelReturn {
 
 				// Then load customer data
 				const customerData = await getCustomer();
+
+				// Convert plain data to Customer model instance
+				const customer = customerData
+					? new Customer(customerData)
+					: null;
+
 				return {
-					customer: customerData,
+					customer,
 					authenticated: true,
 				};
 			}
 		);
 
 		if (result.success && result.data) {
+			const { customer, authenticated } = result.data;
 			setViewState((prev) => ({
 				...prev,
-				customer: result.data.customer,
-				isAuthenticated: result.data.authenticated,
+				customer,
+				isAuthenticated: authenticated,
 				error: null,
 			}));
 		} else {

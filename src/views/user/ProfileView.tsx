@@ -2,7 +2,7 @@
 
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
-import type { CustomerType } from "@/models/customer";
+import type { Customer } from "@/models/customer/types";
 import {
 	LogOut,
 	User as UserIcon,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 interface ProfileViewProps {
-	customer: CustomerType;
+	customer: Customer;
 }
 
 export function ProfileView({ customer }: ProfileViewProps) {

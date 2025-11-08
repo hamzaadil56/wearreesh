@@ -22,6 +22,7 @@ export default async function AccountPage({
 	const idToken = cookieStore.get(COOKIE_NAMES.ID_TOKEN)?.value;
 	let customer = null;
 	if (idToken) {
+		// Get plain customer data (not class instance)
 		customer = await getCustomer();
 	}
 
