@@ -5,13 +5,13 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { exchangeCodeForToken } from "@/lib/auth/oauth";
+import { exchangeCodeForToken } from "@/shared/lib/auth/oauth";
 import {
 	verifyOAuthState,
 	clearOAuthState,
 	storeSession,
-} from "@/lib/auth/session";
-import { OAUTH_CONFIG } from "@/lib/auth/config";
+} from "@/shared/lib/auth/session";
+import { OAUTH_CONFIG } from "@/shared/lib/auth/config";
 
 export async function GET(request: NextRequest) {
 	try {

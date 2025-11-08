@@ -4,11 +4,11 @@
  */
 
 import { Suspense } from "react";
-import { getCustomer } from "@/actions/customer.actions";
+import { getCustomer } from "@/models/customer/Customer.actions";
 import { ProfileView } from "@/views/user/ProfileView";
 import { AccountClient } from "./AccountClient";
 import { cookies } from "next/headers";
-import { COOKIE_NAMES } from "@/lib/auth/session";
+import { COOKIE_NAMES } from "@/shared/lib/auth/session";
 
 // Force dynamic rendering to check session on every request
 export const dynamic = "force-dynamic";

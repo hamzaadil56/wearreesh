@@ -5,10 +5,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { clearSession } from "@/lib/auth/session";
-import { OAUTH_CONFIG } from "@/lib/auth/config";
+import { clearSession } from "@/shared/lib/auth/session";
+import { OAUTH_CONFIG } from "@/shared/lib/auth/config";
 import { cookies } from "next/headers";
-import { COOKIE_NAMES } from "@/lib/auth/session";
+import { COOKIE_NAMES } from "@/shared/lib/auth/session";
 
 export async function GET(request: NextRequest) {
 	try {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 			OAUTH_CONFIG.END_SESSION_ENDPOINT
 		);
 		await clearSession();
-        
+
 		// Redirect to Shopify's logout endpoint
 		return NextResponse.redirect(logoutUrl.toString());
 	} catch (error) {

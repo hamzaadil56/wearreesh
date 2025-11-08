@@ -3,7 +3,7 @@
  * Based on: https://shopify.dev/docs/api/customer/latest
  */
 
-import { OAUTH_CONFIG } from "@/lib/auth/config";
+import { OAUTH_CONFIG } from "@/shared/lib/auth/config";
 
 /**
  * Fetch from Customer Account API with access token

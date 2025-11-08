@@ -9,9 +9,9 @@ import {
 	buildAuthorizationUrl,
 	generateState,
 	generateNonce,
-} from "@/lib/auth/oauth";
-import { storeOAuthState } from "@/lib/auth/session";
-import { OAUTH_CONFIG, validateOAuthConfig } from "@/lib/auth/config";
+} from "@/shared/lib/auth/oauth";
+import { storeOAuthState } from "@/shared/lib/auth/session";
+import { OAUTH_CONFIG, validateOAuthConfig } from "@/shared/lib/auth/config";
 
 export async function GET(request: NextRequest) {
 	try {

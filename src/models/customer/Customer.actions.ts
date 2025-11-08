@@ -5,14 +5,14 @@
 
 "use server";
 
-import { getSession, isSessionValid } from "@/lib/auth/session";
-import { customerAccountApiFetch } from "@/lib/customer/api-client";
-import { GET_CUSTOMER_QUERY } from "@/lib/customer/queries";
+import { getSession, isSessionValid } from "@/shared/lib/auth/session";
+import { customerAccountApiFetch } from "@/shared/lib/customer/api-client";
+import { GET_CUSTOMER_QUERY } from "@/shared/lib/shopify/queries/customer";
 import {
 	type Customer,
 	type CustomerAccountApiCustomer,
 	transformCustomer,
-} from "@/lib/customer/types";
+} from "@/models/customer/types";
 
 /**
  * Get current authenticated customer
@@ -72,4 +72,3 @@ export async function getCustomer(): Promise<Customer | null> {
 export async function isAuthenticated(): Promise<boolean> {
 	return await isSessionValid();
 }
-
