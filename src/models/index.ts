@@ -14,5 +14,5 @@ export * from "./collection/CollectionRepository";
 // Cart exports
 export * from "./cart/Cart.model";
 
-// User exports
-export * from "./user/User.model";
+// Customer exports
+export * from "./customer";

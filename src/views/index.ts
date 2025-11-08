@@ -6,3 +6,6 @@ export * from "./navigation/CollectionsListView";
 
 // Search exports
 export * from "./search";
+
+// User/Customer exports
+export * from "./user";

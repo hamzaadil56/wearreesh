@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { CartProvider } from "@/shared/components/cart";
+import { CustomerProvider } from "@/shared/components/customer";
 import { CartRepository } from "@/models/cart";
 import { Cart } from "@/shared/lib/shopify/types";
 import { cookies } from "next/headers";
@@ -46,11 +47,13 @@ export default async function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<CartProvider initialCart={initialCart}>
-						<Navbar />
-						<main className="flex-1">{children}</main>
-						<Footer />
-					</CartProvider>
+					<CustomerProvider>
+						<CartProvider initialCart={initialCart}>
+							<Navbar />
+							<main className="flex-1">{children}</main>
+							<Footer />
+						</CartProvider>
+					</CustomerProvider>
 				</ThemeProvider>
 			</body>
 		</html>

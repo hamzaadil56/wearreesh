@@ -359,3 +359,121 @@ export type ShopifyProductsOptionsOperation = {
 		first?: number;
 	};
 };
+
+// Customer Types
+export type ShopifyCustomerAddress = {
+	id: string;
+	firstName: string;
+	lastName: string;
+	company?: string;
+	address1: string;
+	address2?: string;
+	city: string;
+	province: string;
+	country: string;
+	zip: string;
+	phone?: string;
+};
+
+export type ShopifyCustomer = {
+	id: string;
+	email: string;
+	firstName?: string;
+	lastName?: string;
+	phone?: string;
+	acceptsMarketing: boolean;
+	createdAt: string;
+	updatedAt: string;
+	numberOfOrders: number;
+	addresses: Connection<ShopifyCustomerAddress>;
+	defaultAddress?: ShopifyCustomerAddress;
+};
+
+export type Customer = Omit<ShopifyCustomer, "addresses"> & {
+	addresses: ShopifyCustomerAddress[];
+};
+
+export type CustomerAccessToken = {
+	accessToken: string;
+	expiresAt: string;
+};
+
+export type CustomerCreateInput = {
+	email: string;
+	password: string;
+	firstName?: string;
+	lastName?: string;
+	phone?: string;
+	acceptsMarketing?: boolean;
+};
+
+export type CustomerAccessTokenCreateInput = {
+	email: string;
+	password: string;
+};
+
+export type CustomerUserError = {
+	code?: string;
+	field?: string[];
+	message: string;
+};
+
+export type ShopifyCustomerCreateOperation = {
+	data: {
+		customerCreate: {
+			customer?: ShopifyCustomer;
+			customerUserErrors: CustomerUserError[];
+		};
+	};
+	variables: {
+		input: CustomerCreateInput;
+	};
+};
+
+export type ShopifyCustomerAccessTokenCreateOperation = {
+	data: {
+		customerAccessTokenCreate: {
+			customerAccessToken?: CustomerAccessToken;
+			customerUserErrors: CustomerUserError[];
+		};
+	};
+	variables: {
+		input: CustomerAccessTokenCreateInput;
+	};
+};
+
+export type ShopifyCustomerAccessTokenDeleteOperation = {
+	data: {
+		customerAccessTokenDelete: {
+			deletedAccessToken?: string;
+			deletedCustomerAccessTokenId?: string;
+			userErrors: {
+				field: string[];
+				message: string;
+			}[];
+		};
+	};
+	variables: {
+		customerAccessToken: string;
+	};
+};
+
+export type ShopifyCustomerRecoverOperation = {
+	data: {
+		customerRecover: {
+			customerUserErrors: CustomerUserError[];
+		};
+	};
+	variables: {
+		email: string;
+	};
+};
+
+export type ShopifyCustomerOperation = {
+	data: {
+		customer?: ShopifyCustomer;
+	};
+	variables: {
+		customerAccessToken: string;
+	};
+};
