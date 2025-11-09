@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import type { ProductImage } from "@/models/product/Product.model";
 import { motion } from "framer-motion";
-import type { Swiper as SwiperType } from "swiper";
 import { cn } from "@/shared/lib/utils";
-import { ProductCarousel, type CarouselImage } from "./ProductCarousel";
-import { Carousel_004 } from "../ui/skiper-ui/skiper50";
+import { Carousel } from "@/shared/components/ui/carousel";
+import type { CarouselItem } from "@/shared/components/ui/carousel";
 
 interface ProductImageGalleryProps {
 	images: ProductImage[];
 	primaryImage: ProductImage | null;
 	productTitle: string;
+}
+
+interface ImageCarouselItem extends CarouselItem {
+	url: string;
+	altText: string | null;
 }
 
 export default function ProductImageGallery({
@@ -21,7 +25,6 @@ export default function ProductImageGallery({
 	productTitle,
 }: ProductImageGalleryProps) {
 	const [activeIndex, setActiveIndex] = useState(0);
-	const swiperRef = useRef<SwiperType | null>(null);
 
 	// Prepare images array
 	const displayImages =
@@ -72,18 +75,21 @@ export default function ProductImageGallery({
 		);
 	}
 
-	// Convert ProductImage to CarouselImage format
-	const carouselImages: CarouselImage[] = displayImages.map((image) => ({
-		src: image.url,
-		alt: image.altText || productTitle,
-	}));
+	// Convert ProductImage to CarouselItem format
+	const carouselImages: ImageCarouselItem[] = displayImages.map(
+		(image, index) => ({
+			id: index,
+			url: image.url,
+			altText: image.altText,
+		})
+	);
 
 	// Custom slide renderer with Next.js Image optimization
-	const renderSlide = (image: CarouselImage, index: number) => (
+	const renderSlide = (image: ImageCarouselItem, index: number) => (
 		<div className="aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-muted/30 to-muted/60 shadow-2xl border border-border/20">
 			<Image
-				src={image.src}
-				alt={image.alt}
+				src={image.url}
+				alt={image.altText || productTitle}
 				width={800}
 				height={800}
 				className="h-full w-full object-cover object-center"
@@ -93,57 +99,54 @@ export default function ProductImageGallery({
 		</div>
 	);
 
-	return (
-		<div className="w-full space-y-4">
-			{/* Product Carousel */}
-			<ProductCarousel
-				images={carouselImages}
-				loop={displayImages.length > 2}
-				showNavigation={displayImages.length > 1}
-				showCounter={displayImages.length > 1}
-				activeIndex={activeIndex}
-				onSlideChange={(index) => setActiveIndex(index)}
-				onSwiperInit={(swiper) => {
-					swiperRef.current = swiper;
-				}}
-				aspectRatio="square"
-				renderSlide={renderSlide}
-			/>
-
-			{/* Custom Thumbnail Pagination */}
-			{displayImages.length > 1 && (
-				<div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
-					{displayImages.map((image, index) => (
-						<motion.button
-							key={index}
-							initial={{ opacity: 0, scale: 0.8 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ delay: index * 0.05 }}
-							onClick={() => {
-								if (swiperRef.current) {
-									swiperRef.current.slideToLoop(index);
-								}
-							}}
-							className={cn(
-								"aspect-square overflow-hidden rounded-xl transition-all duration-300 relative",
-								"md:hover:scale-105 cursor-pointer",
-								activeIndex === index
-									? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg"
-									: "ring-1 ring-border/20 md:hover:ring-border/40 shadow-sm md:hover:shadow-md"
-							)}
-						>
-							<Image
-								src={image.url}
-								alt={image.altText || `Thumbnail ${index + 1}`}
-								width={120}
-								height={120}
-								className="h-full w-full object-cover object-center"
-								loading="lazy"
-							/>
-						</motion.button>
-					))}
-				</div>
-			)}
+	// Custom thumbnail pagination
+	const renderCustomPagination = (
+		items: ImageCarouselItem[],
+		activeIdx: number,
+		onItemClick: (index: number) => void
+	) => (
+		<div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
+			{items.map((image, index) => (
+				<motion.button
+					key={index}
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ delay: index * 0.05 }}
+					onClick={() => onItemClick(index)}
+					className={cn(
+						"aspect-square overflow-hidden rounded-xl transition-all duration-300 relative cursor-pointer",
+						"md:hover:scale-105",
+						activeIdx === index
+							? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg"
+							: "ring-1 ring-border/20 md:hover:ring-border/40 shadow-sm md:hover:shadow-md"
+					)}
+				>
+					<Image
+						src={image.url}
+						alt={image.altText || `Thumbnail ${index + 1}`}
+						width={120}
+						height={120}
+						className="h-full w-full object-cover object-center"
+						loading="lazy"
+					/>
+				</motion.button>
+			))}
 		</div>
+	);
+
+	return (
+		<Carousel
+			items={carouselImages}
+			renderSlide={renderSlide}
+			pagination="custom"
+			renderCustomPagination={renderCustomPagination}
+			showNavigation={displayImages.length > 1}
+			showCounter={displayImages.length > 1}
+			counterPosition="bottom-right"
+			loop={displayImages.length > 2}
+			effect="creative"
+			onSlideChange={(index) => setActiveIndex(index)}
+			wrapperClassName="space-y-4"
+		/>
 	);
 }
