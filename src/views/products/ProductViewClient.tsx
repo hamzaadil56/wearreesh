@@ -30,7 +30,6 @@ export default function ProductViewClient({ product }: ProductViewClientProps) {
 							<h1 className="text-3xl font-bold tracking-tight text-foreground">
 								{product.title}
 							</h1>
-
 							{/* Price */}
 							<div className="flex items-center gap-2">
 								<span className="text-2xl font-semibold text-foreground">
@@ -50,7 +49,6 @@ export default function ProductViewClient({ product }: ProductViewClientProps) {
 									</>
 								)}
 							</div>
-
 							{/* Availability */}
 							<div className="flex items-center gap-2">
 								{product.availableForSale ? (
@@ -70,17 +68,14 @@ export default function ProductViewClient({ product }: ProductViewClientProps) {
 								)}
 							</div>
 						</div>
-
 						{/* Description */}
 						{product.description && (
 							<div className="prose prose-sm max-w-none text-muted-foreground">
 								<p>{product.description}</p>
 							</div>
 						)}
-
 						{/* Product Options and Add to Cart */}
 						<ProductOptions viewModel={product} />
-
 						{/* Product Tags */}
 						{product.tags.length > 0 && (
 							<div className="space-y-2">
