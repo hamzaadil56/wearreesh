@@ -61,62 +61,61 @@ export default async function Home() {
 
 	return (
 		<div className="flex flex-col min-h-screen">
-			{/* Hero Section with Collection Image Background */}
-			<section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-				{/* Background Image - Optimized with Next.js Image */}
-				{heroCollection?.image && (
-					<div className="absolute inset-0 z-0">
-						<Image
-							src={heroCollection.image.url}
-							alt="Hero Background"
-							fill
-							priority
-							quality={75}
-							className="object-cover"
-							sizes="100vw"
-						/>
-					</div>
-				)}
+			{/* Hero Banner Card Section */}
+			<section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-background">
+				<div className="container mx-auto px-4">
+					{/* Hero Banner Card - Clickable */}
+					<Link
+						href="/products"
+						className="group relative block w-full overflow-hidden rounded-2xl md:rounded-3xl shadow-lg md:shadow-2xl transition-all duration-300 hover:shadow-3xl md:hover:scale-[1.02] cursor-pointer"
+					>
+						{/* Banner Image Container */}
+						<div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] overflow-hidden">
+							{heroCollection?.image ? (
+								<>
+									<Image
+										src={heroCollection.image.url}
+										alt={heroCollection.title || "Shop Now"}
+										fill
+										priority
+										quality={85}
+										className="object-cover transition-transform duration-500 group-hover:scale-110"
+										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
+									/>
+									{/* Gradient Overlay */}
+									<div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+									<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+								</>
+							) : (
+								<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20" />
+							)}
 
-				{/* Fallback gradient background if no collection image */}
-				{!heroCollection?.image && (
-					<div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10" />
-				)}
+							{/* Banner Content */}
+							<div className="absolute inset-0 flex flex-col items-start justify-center p-6 sm:p-8 md:p-12 lg:p-16 text-white z-10">
+								<div className="max-w-2xl">
+									<h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-3 sm:mb-4 md:mb-6 drop-shadow-2xl">
+										Welcome to
+										<br />
+										<span className="text-primary-foreground">
+											WearReesh
+										</span>
+									</h1>
+									{heroCollection?.description && (
+										<p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-6 md:mb-8 max-w-xl drop-shadow-lg line-clamp-2 sm:line-clamp-3">
+											{heroCollection.description}
+										</p>
+									)}
+									<div className="flex items-center gap-2 text-sm sm:text-base md:text-lg font-semibold group-hover:gap-3 transition-all duration-300">
+										<span>Shop Now</span>
+										<ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 transition-transform duration-300 group-hover:translate-x-1" />
+									</div>
+								</div>
+							</div>
 
-				{/* Hero Content */}
-				<div className="relative z-10 container mx-auto px-4 text-center">
-					<div className="max-w-4xl mx-auto">
-						<h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-2xl animate-fade-in">
-							Welcome to
-							<br className="sm:hidden" />
-							<span className="sm:ml-4 text-white ">
-								WearReesh
-							</span>
-						</h1>
-						{/* <p className="text-xl md:text-2xl text-white mb-8 max-w-2xl mx-auto drop-shadow-lg animate-fade-in-delay-1">
-							{heroCollection?.description ||
-								"Discover premium outdoor gear and apparel designed for your adventures. Quality that endures, style that inspires."}
-						</p> */}
-						<div className="flex justify-center animate-fade-in-delay-2">
-							<Button
-								size="lg"
-								asChild
-								className="text-lg px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 md:backdrop-blur-sm shadow-2xl md:hover:scale-105 transition-all duration-300 border-2 border-primary-foreground/20"
-							>
-								<Link href="/products">
-									Shop Now
-									<ArrowRight className="ml-2 h-5 w-5" />
-								</Link>
-							</Button>
+							{/* Hover Overlay Effect */}
+							<div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors duration-300" />
 						</div>
-					</div>
-				</div>
-
-				{/* Scroll indicator - Only show on desktop */}
-				<div className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-					<div className="w-6 h-10 border-2 border-white rounded-full flex justify-center bg-black/20">
-						<div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
-					</div>
+					</Link>
 				</div>
 			</section>
 
