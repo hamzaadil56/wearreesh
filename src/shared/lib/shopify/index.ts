@@ -80,7 +80,7 @@ export async function shopifyFetch<T>({
 	query: string;
 	tags?: string[];
 	variables?: ExtractVariables<T>;
-}): Promise<{ status: number; body: T } | never> {
+}): Promise<{ status: number; body: T }> {
 	try {
 		const result = await fetch(endpoint, {
 			method: "POST",
@@ -99,7 +99,13 @@ export async function shopifyFetch<T>({
 
 		const body = await result.json();
 		if (body.errors) {
-			throw body.errors[0];
+			if (process.env.NODE_ENV === "development") {
+				console.warn(
+					"[Shopify] GraphQL error (store may be paused):",
+					body.errors[0]?.message ?? body.errors[0]
+				);
+			}
+			return { status: result.status, body: { data: null } as unknown as T };
 		}
 
 		return {
@@ -107,19 +113,11 @@ export async function shopifyFetch<T>({
 			body,
 		};
 	} catch (e: unknown) {
-		if (isShopifyError(e)) {
-			throw {
-				cause: e.cause?.toString() || "unknown",
-				status: e.status || 500,
-				message: e.message,
-				query,
-			};
+		if (process.env.NODE_ENV === "development") {
+			const msg = isShopifyError(e) ? e.message : String(e);
+			console.warn("[Shopify] Fetch failed (store may be unavailable):", msg);
 		}
-
-		throw {
-			error: e,
-			query,
-		};
+		return { status: 503, body: { data: null } as unknown as T };
 	}
 }
 
@@ -142,7 +140,7 @@ export const reshapeCart = (cart: ShopifyCart): Cart => {
 };
 
 const reshapeCollection = (
-	collection: ShopifyCollection
+	collection: ShopifyCollection | null | undefined
 ): Collection | undefined => {
 	if (!collection) {
 		return undefined;
@@ -183,7 +181,7 @@ const reshapeImages = (images: Connection<Image>, productTitle: string) => {
 };
 
 const reshapeProduct = (
-	product: ShopifyProduct,
+	product: ShopifyProduct | null | undefined,
 	filterHiddenProducts: boolean = true
 ) => {
 	if (
@@ -228,6 +226,9 @@ export async function addToCart(
 		},
 		cache: "no-store",
 	});
+	if (!res.body.data?.cartLinesAdd?.cart) {
+		throw new Error("Failed to add to cart: store unavailable");
+	}
 	return reshapeCart(res.body.data.cartLinesAdd.cart);
 }
 
@@ -244,6 +245,9 @@ export async function removeFromCart(
 		cache: "no-store",
 	});
 
+	if (!res.body.data?.cartLinesRemove?.cart) {
+		throw new Error("Failed to remove from cart: store unavailable");
+	}
 	return reshapeCart(res.body.data.cartLinesRemove.cart);
 }
 
@@ -260,6 +264,9 @@ export async function updateCart(
 		cache: "no-store",
 	});
 
+	if (!res.body.data?.cartLinesUpdate?.cart) {
+		throw new Error("Failed to update cart: store unavailable");
+	}
 	return reshapeCart(res.body.data.cartLinesUpdate.cart);
 }
 
@@ -274,7 +281,7 @@ export async function getCart(cartId: string): Promise<Cart | undefined> {
 	});
 
 	// Old carts becomes `null` when you checkout.
-	if (!res.body.data.cart) {
+	if (!res.body.data?.cart) {
 		return undefined;
 	}
 
@@ -292,7 +299,7 @@ export async function getCollection(
 		},
 	});
 
-	return reshapeCollection(res.body.data.collection);
+	return reshapeCollection(res.body.data?.collection);
 }
 
 export async function getCollectionProducts({
@@ -315,8 +322,7 @@ export async function getCollectionProducts({
 		},
 	});
 
-	if (!res.body.data.collection) {
-		console.log(`No collection found for \`${collection}\``);
+	if (!res.body.data?.collection) {
 		return [];
 	}
 
@@ -330,6 +336,7 @@ export async function getCollections(): Promise<Collection[]> {
 		query: getCollectionsQuery,
 		tags: [TAGS.collections],
 	});
+	if (!res.body.data?.collections) return [];
 	const shopifyCollections = removeEdgesAndNodes(res.body.data.collections);
 	const collections = [
 		{
@@ -375,13 +382,13 @@ export async function getMenu(handle: string): Promise<Menu[]> {
 	);
 }
 
-export async function getPage(handle: string): Promise<Page> {
+export async function getPage(handle: string): Promise<Page | undefined> {
 	const res = await shopifyFetch<ShopifyPageOperation>({
 		query: getPageQuery,
 		variables: { handle },
 	});
 
-	return res.body.data.page;
+	return res.body.data?.page;
 }
 
 export async function getPages(): Promise<Page[]> {
@@ -389,6 +396,7 @@ export async function getPages(): Promise<Page[]> {
 		query: getPagesQuery,
 	});
 
+	if (!res.body.data?.pages) return [];
 	return removeEdgesAndNodes(res.body.data.pages);
 }
 
@@ -401,7 +409,7 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
 		},
 	});
 
-	return reshapeProduct(res.body.data.product, false);
+	return reshapeProduct(res.body.data?.product, false);
 }
 
 export async function getProductRecommendations(
@@ -415,6 +423,7 @@ export async function getProductRecommendations(
 		},
 	});
 
+	if (!res.body.data?.productRecommendations) return [];
 	return reshapeProducts(res.body.data.productRecommendations);
 }
 
@@ -437,6 +446,7 @@ export async function getProducts({
 		},
 	});
 
+	if (!res.body.data?.products) return [];
 	return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
 }
 
@@ -470,6 +480,7 @@ export async function getProductsOptions({
 		},
 	});
 
+	if (!res.body.data?.products) return [];
 	return removeEdgesAndNodes(res.body.data.products);
 }
 

@@ -242,10 +242,10 @@ export default function ContactPage() {
 												Send us an email anytime
 											</p>
 											<a
-												href="mailto:info@wearreesh.com"
+												href="mailto:contactwearreesh@wearreesh.com"
 												className="text-primary hover:underline font-medium"
 											>
-												info@wearreesh.com
+												contactwearreesh@wearreesh.com
 											</a>
 										</div>
 									</div>
@@ -257,16 +257,16 @@ export default function ContactPage() {
 										</div>
 										<div>
 											<h3 className="font-semibold mb-1">
-												Call Us
+												WhatsApp Us
 											</h3>
 											<p className="text-muted-foreground text-sm mb-2">
 												Mon-Fri from 9am to 6pm
 											</p>
 											<a
-												href="tel:+923001234567"
+												href="https://wa.me/923240882606"
 												className="text-primary hover:underline font-medium"
 											>
-												+92 300 123 4567
+												+92 324 088 2606
 											</a>
 										</div>
 									</div>
@@ -284,9 +284,9 @@ export default function ContactPage() {
 												Come say hello at our office
 											</p>
 											<address className="text-primary not-italic">
-												123 Fashion Street
+												Karim Center, 1st Floor
 												<br />
-												Karachi, Pakistan
+												Gulzar Fashion
 											</address>
 										</div>
 									</div>

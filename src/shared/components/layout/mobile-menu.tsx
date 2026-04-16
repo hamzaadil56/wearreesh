@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 
@@ -73,42 +73,30 @@ export function MobileMenu({
 
 					{/* Main Navigation Links */}
 					<div className="flex-1 pt-8">
-						{navigationLinks.map((link, index) => (
-							<React.Fragment key={link.name}>
-								<DrawerClose asChild>
-									<Link
-										href={link.href}
-										className="block py-4 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
-									>
-										{link.name}
-									</Link>
-								</DrawerClose>
-								{/* Divider between links (not after the last one) */}
-								{index < navigationLinks.length - 1 && (
-									<div className="border-t border-border" />
-								)}
-							</React.Fragment>
-						))}
+						{navigationLinks
+							.filter((link) => link.name !== "Shop")
+							.map((link, index, arr) => (
+								<React.Fragment key={link.name}>
+									<DrawerClose asChild>
+										<Link
+											href={link.href}
+											className="block py-4 px-2 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
+										>
+											{link.name}
+										</Link>
+									</DrawerClose>
+									{index < arr.length - 1 && (
+										<div className="border-t border-border" />
+									)}
+								</React.Fragment>
+							))}
 					</div>
 
-					{/* Bottom Section - Account & Social Media */}
+					{/* Bottom Section - Social Media */}
 					<div className="mt-auto">
-						{/* Divider before bottom section */}
 						<div className="border-t border-border mb-6" />
 
-						{/* Account and Social Media in same row */}
-						<div className="flex items-center justify-between px-2">
-							{/* Account Section */}
-							<DrawerClose asChild>
-								<Link
-									href="/account"
-									className="flex items-center space-x-3 py-4 text-lg font-medium transition-colors hover:text-foreground hover:underline underline-offset-4 text-foreground/80"
-								>
-									<User className="h-5 w-5" />
-									<span>My Account</span>
-								</Link>
-							</DrawerClose>
-
+						<div className="flex justify-end px-2 pb-2">
 							{/* Social Media Icons */}
 							<div className="flex space-x-3">
 								{socialMediaLinks.map((social) => {

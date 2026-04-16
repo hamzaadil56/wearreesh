@@ -28,7 +28,7 @@ export default function AboutPage() {
 							className="px-6 py-2 text-sm font-medium animate-fade-in"
 						>
 							<Sparkles className="w-4 h-4 mr-2" />
-							Established 1992
+							Established 1996
 						</Badge>
 
 						<h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight animate-fade-in-delay-1">
@@ -175,7 +175,7 @@ export default function AboutPage() {
 						</div>
 
 						<div className="space-y-12">
-							{/* Timeline Item 1992 */}
+							{/* Timeline Item 1996 */}
 							<div className="flex items-start space-x-8 group">
 								<div className="flex-shrink-0">
 									<div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg group-hover:scale-110 transition-transform duration-300">
@@ -185,7 +185,7 @@ export default function AboutPage() {
 								<div className="flex-1 pb-8">
 									<div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border/50 hover:border-primary/30 transition-colors duration-300">
 										<h3 className="text-xl font-semibold mb-2">
-											The Foundation (1992)
+											The Foundation (1996)
 										</h3>
 										<p className="text-muted-foreground mb-4">
 											WearReesh was founded with a vision

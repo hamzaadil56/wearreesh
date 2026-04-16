@@ -34,7 +34,7 @@ export default async function RootLayout({
 			const cart = await repository.findById(cartId);
 			initialCart = cart?.toJSON() as Cart;
 		} catch (error) {
-			console.error("Failed to fetch cart:", error);
+			console.warn("Failed to fetch cart:", error);
 		}
 	}
 

@@ -62,7 +62,7 @@ export abstract class BaseRepository<T extends Entity>
 			const data = await operation();
 			return { success: true, data };
 		} catch (error) {
-			console.error(errorMessage, error);
+			console.warn(errorMessage, error);
 			return {
 				success: false,
 				error: error instanceof Error ? error : new Error(errorMessage),

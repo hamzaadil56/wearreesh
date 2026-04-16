@@ -31,14 +31,12 @@ export function Footer() {
 
 	const quickLinks = [
 		{ name: "Home", href: "/" },
-		{ name: "Products", href: "/products" },
 		{ name: "About", href: "/about" },
 		{ name: "Contact", href: "/contact" },
 	];
 
 	const customerService = [
 		{ name: "Returns", href: "/returns" },
-		{ name: "Size Guide", href: "/size-guide" },
 	];
 
 	const company = [{ name: "About Us", href: "/about" }];
@@ -121,13 +119,13 @@ export function Footer() {
 								<div className="flex items-center space-x-3 text-muted-foreground">
 									<Mail className="h-4 w-4 text-primary" />
 									<span className="text-sm">
-										hello@wearreesh.com
+										contactwearreesh@wearreesh.com
 									</span>
 								</div>
 								<div className="flex items-center space-x-3 text-muted-foreground">
 									<Phone className="h-4 w-4 text-primary" />
 									<span className="text-sm">
-										+1 (555) 123-4567
+										+92 324 088 2606
 									</span>
 								</div>
 							</div>

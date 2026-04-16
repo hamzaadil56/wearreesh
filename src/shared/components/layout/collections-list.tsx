@@ -13,7 +13,7 @@ export async function CollectionsList() {
 
 		return <CollectionsListView viewModel={viewModel} />;
 	} catch (error) {
-		console.error("Error fetching collections:", error);
+		console.warn("Error fetching collections:", error);
 		return (
 			<div className="flex items-center justify-center py-8">
 				<p className="text-destructive text-sm">
